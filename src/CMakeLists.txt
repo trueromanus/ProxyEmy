@@ -58,3 +58,7 @@ target_link_libraries(ProxyEmy
   PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick)
 target_link_libraries(ProxyEmy PRIVATE Qt6::Concurrent)
 target_link_libraries(ProxyEmy PRIVATE Qt6::Qml)
+
+add_subdirectory(yaml-cpp)
+target_link_libraries(ProxyEmy PRIVATE yaml-cpp)
+
