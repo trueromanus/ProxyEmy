@@ -1,10 +1,15 @@
 #include "configurationviewmodel.h"
 #include <QFile>
 #include <QDebug>
+#include <QCoreApplication>
 
 ConfigurationViewModel::ConfigurationViewModel(QObject *parent) : QObject(parent)
 {
-
+    auto arguments = QCoreApplication::arguments();
+    if (arguments.length() > 1) {
+        auto yamlPath = arguments.value(1);
+        readYaml(yamlPath);
+    }
 }
 
 void ConfigurationViewModel::readYaml(const QString &path) noexcept

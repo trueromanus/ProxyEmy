@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.14)
 
 project(ProxyEmy LANGUAGES CXX)
 
+include(FetchContent)
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_AUTOUIC ON)
@@ -59,6 +61,20 @@ target_link_libraries(ProxyEmy
 target_link_libraries(ProxyEmy PRIVATE Qt6::Concurrent)
 target_link_libraries(ProxyEmy PRIVATE Qt6::Qml)
 
-add_subdirectory(yaml-cpp)
-target_link_libraries(ProxyEmy PRIVATE yaml-cpp)
+FetchContent_Declare(
+                yaml-cpp
+                GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+                GIT_SHALLOW	ON
+                GIT_TAG yaml-cpp-0.6.3
+        )
+FetchContent_GetProperties(yaml-cpp)
+if(NOT yaml-cpp_POPULATED)
+        message(STATUS "Populating yaml-cpp...")
+        FetchContent_Populate(yaml-cpp)
+        set(YAML_CPP_BUILD_TESTS OFF)
+        add_subdirectory(${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR})
+        message(STATUS "Done.")
+endif()
 
+include_directories(BEFORE SYSTEM ${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR}/include)
+target_link_libraries(ProxyEmy PRIVATE yaml-cpp)

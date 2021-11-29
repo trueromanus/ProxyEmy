@@ -20,9 +20,13 @@ ApplicationWindow {
         }
     }
 
+    ConfigurationViewModel {
+        id: configurationViewModel
+    }
+
     background: Rectangle {
         anchors.fill: parent
-        color: "red"
+        color: "green"
     }
 
     Component.onDestruction: {
