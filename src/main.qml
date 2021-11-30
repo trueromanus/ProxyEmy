@@ -15,8 +15,9 @@ ApplicationWindow {
 
     HttpProxyServer {
         id: httpProxyServer
-        Component.onCompleted: {
-            httpProxyServer.startServer();
+        configuration: configurationViewModel
+        Component.onDestruction: {
+            httpProxyServer.stopServer();
         }
     }
 
@@ -27,9 +28,5 @@ ApplicationWindow {
     background: Rectangle {
         anchors.fill: parent
         color: "green"
-    }
-
-    Component.onDestruction: {
-        httpProxyServer.stopServer();
     }
 }

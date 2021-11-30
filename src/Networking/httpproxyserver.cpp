@@ -8,10 +8,20 @@ HttpProxyServer::HttpProxyServer(QObject *parent) : QTcpServer(parent)
 {
 }
 
+void HttpProxyServer::setConfiguration(ConfigurationViewModel *configuration) noexcept
+{
+    if (m_configuration == configuration) return;
+
+    m_configuration = configuration;
+    emit configurationChanged();
+
+    //TODO: move it to anywhere
+    startServer();
+}
+
 void HttpProxyServer::startServer()
 {
-    auto port = 8080;
-    //TODO: read port from configuration
+    auto port = m_configuration->port();
     if (!listen(QHostAddress::Any, port)) {
         qInfo() << "Error while trying start listening on port " << port;
         return;

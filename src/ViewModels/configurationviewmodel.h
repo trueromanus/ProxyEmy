@@ -2,6 +2,8 @@
 #define CONFIGURATIONVIEWMODEL_H
 
 #include <QObject>
+#include <QMap>
+#include <QScopedPointer>
 #include <yaml-cpp/yaml.h>
 
 class ConfigurationViewModel : public QObject
@@ -11,6 +13,7 @@ class ConfigurationViewModel : public QObject
 
 private:
     int m_port { 8080 };
+    QScopedPointer<QMap<QString, QString>> m_addresses { new QMap<QString, QString>() };
 
 public:
     explicit ConfigurationViewModel(QObject *parent = nullptr);
@@ -19,6 +22,8 @@ public:
 
 private:
     void readYaml(const QString& path) noexcept;
+    bool readPort(const YAML::Node& node) noexcept;
+    bool readAddresses(const YAML::Node& node) noexcept;
 
 signals:
     void portChanged();
