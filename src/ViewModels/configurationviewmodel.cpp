@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QCoreApplication>
 #include <QDir>
+#include <QRegularExpression>
 
 ConfigurationViewModel::ConfigurationViewModel(QObject *parent) : QObject(parent)
 {
@@ -40,6 +41,7 @@ void ConfigurationViewModel::readYaml(const QString &path) noexcept
 
         if (!readPort(yamlRoot)) return;
         if (!readAddresses(yamlRoot)) return;
+        if (!readMappings(yamlRoot)) return;
 
     }  catch (const YAML::ParserException& e) {
         qInfo() << "Parse YAML file: " << QString::fromStdString(e.msg);
@@ -84,4 +86,63 @@ bool ConfigurationViewModel::readAddresses(const YAML::Node &node) noexcept
     }
 
     return !m_addresses->isEmpty();
+}
+
+bool ConfigurationViewModel::readMappings(const YAML::Node &node) noexcept
+{
+    if (!node["mappings"]) {
+        qInfo() << "YAML don't contain mappings sequence!";
+        return false;
+    }
+
+    auto mappingsNode = node["mappings"];
+    if (!mappingsNode.IsSequence()) {
+        qInfo() << "YAML contains mapping tags but it not sequence!";
+        return false;
+    }
+
+    auto it = mappingsNode.begin();
+    while (it != mappingsNode.end())
+    {
+        auto scalarNode = *it;
+        auto addressStdString = scalarNode.as<std::string>("");
+        auto addressString = QString::fromStdString(addressStdString);
+        auto parts = addressString.split(" ");
+        if (parts.length() != 3) continue;
+
+        auto routeMapping = new RouteMapping();
+
+        if (parts.value(0) == "http") routeMapping->setBindingType(1);
+        if (parts.value(0) == "https") routeMapping->setBindingType(2);
+        //TODO: make support WebSocket
+        //if (parts.value(0) == "ws") routeMapping->setBindingType(3);
+        //if (parts.value(0) == "wss") routeMapping->setBindingType(4);
+
+        routeMapping->setLocalRoute(parts.value(1));
+
+        routeMapping->setExternalRoute(processExternalRoute(parts.value(2)));
+
+        m_mappings->append(routeMapping);
+
+        ++it;
+    }
+
+    return !m_addresses->isEmpty();
+}
+
+QString ConfigurationViewModel::processExternalRoute(QString&& externalRoute) const noexcept
+{
+    QRegularExpression regexp("\\{[a-zA-Z0-9\\_\\-]{0,}\\}");
+    auto iterator = regexp.globalMatch(externalRoute);
+    while (iterator.hasNext()) {
+        auto match = iterator.next();
+        QString word = match.captured(0);
+        auto address = "" + word;
+        address.replace("{", "").replace("}", "");
+        if (m_addresses->contains(address)) {
+            externalRoute.replace(word, m_addresses->value(address));
+        }
+    }
+
+    return QString(externalRoute);
 }

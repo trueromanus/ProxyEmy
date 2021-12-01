@@ -35,6 +35,7 @@ set(PROJECT_SOURCES
         ViewModels/configurationviewmodel.cpp ViewModels/configurationviewmodel.h
         Networking/httpproxyserver.cpp Networking/httpproxyserver.h
         proxyemybackend.cpp proxyemybackend.h
+        Models/routemapping.h Models/routemapping.cpp
         qml.qrc
 )
 

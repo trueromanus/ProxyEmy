@@ -21,6 +21,10 @@ void HttpProxyServer::setConfiguration(ConfigurationViewModel *configuration) no
 
 void HttpProxyServer::startServer()
 {
+    if (m_configuration->port() <= 0) {
+        qInfo() << "Port not specified";
+        return;
+    }
     auto port = m_configuration->port();
     if (!listen(QHostAddress::Any, port)) {
         qInfo() << "Error while trying start listening on port " << port;
