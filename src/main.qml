@@ -29,4 +29,12 @@ ApplicationWindow {
         anchors.fill: parent
         color: "green"
     }
+
+    MouseArea {
+        anchors.fill: parent
+        onPressed: {
+            httpProxyServer.startServer();
+        }
+    }
+
 }

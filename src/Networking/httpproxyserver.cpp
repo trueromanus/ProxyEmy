@@ -14,9 +14,6 @@ void HttpProxyServer::setConfiguration(ConfigurationViewModel *configuration) no
 
     m_configuration = configuration;
     emit configurationChanged();
-
-    //TODO: move it to anywhere
-    startServer();
 }
 
 void HttpProxyServer::startServer()
@@ -69,14 +66,26 @@ QString HttpProxyServer::processSocket(int socket)
     }
 
     tcpSocket.waitForReadyRead();
+    auto firstLine = tcpSocket.readLine(3500);
     auto request = tcpSocket.readAll();
 
+    auto parts = firstLine.split(' ');
+    auto currentRoute = parts[1];
+
+    auto mapping = m_configuration->getMappingByRoute(currentRoute);
+    if (mapping == nullptr) {
+        //TODO: return empty result
+        return "";
+    }
+
     QTcpSocket innerTcpSocket;
-    innerTcpSocket.connectToHost("localhost", 5000);
+    innerTcpSocket.connectToHost(mapping->getExternalHost(), mapping->getExternalPort());
     if (!innerTcpSocket.waitForConnected()) {
         qDebug() << "Failed connect" << innerTcpSocket.errorString();
         return "";
     }
+    parts[1] = mapping->mapLocalToExternal(currentRoute).toUtf8();
+    innerTcpSocket.write(parts.join(' '));
     innerTcpSocket.write(request);
     innerTcpSocket.waitForReadyRead();
     auto response = innerTcpSocket.readAll();

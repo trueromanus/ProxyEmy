@@ -22,6 +22,21 @@ ConfigurationViewModel::ConfigurationViewModel(QObject *parent) : QObject(parent
     }
 }
 
+RouteMapping *ConfigurationViewModel::getMappingByRoute(const QString &route)
+{
+    auto iterator = std::find_if(
+        m_mappings->cbegin(),
+        m_mappings->cend(),
+        [route] (const RouteMapping* routeMapping) {
+            return route.startsWith(routeMapping->localRoute());
+        }
+    );
+
+    if (iterator == m_mappings->cend()) return nullptr;
+
+    return *iterator;
+}
+
 void ConfigurationViewModel::readYaml(const QString &path) noexcept
 {
     if (!QFile::exists(path)) {
@@ -55,6 +70,8 @@ bool ConfigurationViewModel::readPort(const YAML::Node &node) noexcept
         qInfo() << "YAML don't contain correct value for `port` key";
         return false;
     }
+
+    m_port = port;
 
     return true;
 }
@@ -105,9 +122,9 @@ bool ConfigurationViewModel::readMappings(const YAML::Node &node) noexcept
     while (it != mappingsNode.end())
     {
         auto scalarNode = *it;
-        auto addressStdString = scalarNode.as<std::string>("");
-        auto addressString = QString::fromStdString(addressStdString);
-        auto parts = addressString.split(" ");
+        auto mappingStdString = scalarNode.as<std::string>("");
+        auto mappingString = QString::fromStdString(mappingStdString);
+        auto parts = mappingString.split(" ");
         if (parts.length() != 3) continue;
 
         auto routeMapping = new RouteMapping();
@@ -127,7 +144,7 @@ bool ConfigurationViewModel::readMappings(const YAML::Node &node) noexcept
         ++it;
     }
 
-    return !m_addresses->isEmpty();
+    return !m_mappings->isEmpty();
 }
 
 QString ConfigurationViewModel::processExternalRoute(QString&& externalRoute) const noexcept

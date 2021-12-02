@@ -22,6 +22,8 @@ public:
 
     int port() const noexcept { return m_port; }
 
+    RouteMapping* getMappingByRoute(const QString& route);
+
 private:
     void readYaml(const QString& path) noexcept;
     bool readPort(const YAML::Node& node) noexcept;

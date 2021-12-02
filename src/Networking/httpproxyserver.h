@@ -29,7 +29,6 @@ public:
 private:
     QString processSocket(int socket);
 
-
 signals:
     void configurationChanged();
 
