@@ -40,8 +40,8 @@ void HttpProxyServer::stopServer()
 
 void HttpProxyServer::incomingConnection(qintptr socketDescriptor)
 {
-    QFuture<QString> data = QtConcurrent::run(&HttpProxyServer::processSocket, this, socketDescriptor);
-    QFutureWatcher<QString> dataWatcher(this);
+    QFuture data = QtConcurrent::run(&HttpProxyServer::processSocket, this, socketDescriptor);
+    /*QFutureWatcher<QString> dataWatcher(this);
     connect(
         &dataWatcher,
         &QFutureWatcher<QString>::finished,
@@ -53,16 +53,15 @@ void HttpProxyServer::incomingConnection(qintptr socketDescriptor)
 
         }
     );
-    dataWatcher.setFuture(data);
+    dataWatcher.setFuture(data);*/
 }
 
-QString HttpProxyServer::processSocket(int socket)
+void HttpProxyServer::processSocket(int socket)
 {
     QTcpSocket tcpSocket;
     if (!tcpSocket.setSocketDescriptor(socket)) {
-        //TODO: added error
-        //tcpSocket.error()
-        return "";
+        qWarning() << "Error while try read socket descriptor: " << tcpSocket.errorString();
+        return;
     }
 
     tcpSocket.waitForReadyRead();
@@ -70,19 +69,27 @@ QString HttpProxyServer::processSocket(int socket)
     auto request = tcpSocket.readAll();
 
     auto parts = firstLine.split(' ');
+    if (parts.count() != 3) {
+        qWarning() << "Error while try read request first line from socket " << socket;
+        closeSocket(tcpSocket);
+        return;
+    }
     auto currentRoute = parts[1];
 
     auto mapping = m_configuration->getMappingByRoute(currentRoute);
     if (mapping == nullptr) {
-        //TODO: return empty result
-        return "";
+        tcpSocket.write(m_EmptyResponse.toUtf8());
+        closeSocket(tcpSocket);
+        return;
     }
+
+    qInfo() << parts[0] + " " + parts[1];
 
     QTcpSocket innerTcpSocket;
     innerTcpSocket.connectToHost(mapping->getExternalHost(), mapping->getExternalPort());
     if (!innerTcpSocket.waitForConnected()) {
-        qDebug() << "Failed connect" << innerTcpSocket.errorString();
-        return "";
+        qInfo() << "Failed connect" << innerTcpSocket.errorString();
+        return;
     }
     parts[1] = mapping->mapLocalToExternal(currentRoute).toUtf8();
     innerTcpSocket.write(parts.join(' '));
@@ -102,9 +109,13 @@ QString HttpProxyServer::processSocket(int socket)
     }
 
     tcpSocket.write(response);
-    tcpSocket.waitForBytesWritten(2000);
+    closeSocket(tcpSocket);
 
-    tcpSocket.disconnectFromHost();
+    return;
+}
 
-    return "";
+void HttpProxyServer::closeSocket(QTcpSocket &socket)
+{
+    socket.waitForBytesWritten(2000);
+    socket.disconnectFromHost();
 }
