@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QSslSocket>
+#include <QList>
 #include "../ViewModels/configurationviewmodel.h"
 
 class HttpProxyServer : public QTcpServer
@@ -30,6 +32,7 @@ public:
 private:
     void processSocket(int socket);
     void closeSocket(QTcpSocket& socket);
+    QTcpSocket* createSocket(const RouteMapping& mapping);
 
 signals:
     void configurationChanged();

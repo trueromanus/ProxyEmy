@@ -16,6 +16,7 @@ private:
     int m_port { 8080 };
     QScopedPointer<QMap<QString, QString>> m_addresses { new QMap<QString, QString>() };
     QScopedPointer<QList<RouteMapping*>> m_mappings { new QList<RouteMapping*>() };
+    RouteMapping* m_rootMapping { nullptr };
 
 public:
     explicit ConfigurationViewModel(QObject *parent = nullptr);
@@ -30,6 +31,7 @@ private:
     bool readAddresses(const YAML::Node& node) noexcept;
     bool readMappings(const YAML::Node& node) noexcept;
     QString processExternalRoute(QString&& externalRoute) const noexcept;
+    void setupRootMapping() noexcept;
 
 signals:
     void portChanged();

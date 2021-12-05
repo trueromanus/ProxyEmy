@@ -20,6 +20,8 @@ ConfigurationViewModel::ConfigurationViewModel(QObject *parent) : QObject(parent
         qInfo() << "YAML finded in current folder: " << QDir::currentPath();
         readYaml(folderYamlPath);
     }
+
+    setupRootMapping();
 }
 
 RouteMapping *ConfigurationViewModel::getMappingByRoute(const QString &route)
@@ -32,7 +34,7 @@ RouteMapping *ConfigurationViewModel::getMappingByRoute(const QString &route)
         }
     );
 
-    if (iterator == m_mappings->cend()) return nullptr;
+    if (iterator == m_mappings->cend()) return m_rootMapping == nullptr ? nullptr : m_rootMapping;
 
     return *iterator;
 }
@@ -162,4 +164,19 @@ QString ConfigurationViewModel::processExternalRoute(QString&& externalRoute) co
     }
 
     return QString(externalRoute);
+}
+
+void ConfigurationViewModel::setupRootMapping() noexcept
+{
+    auto iterator = std::find_if(
+        m_mappings->cbegin(),
+        m_mappings->cend(),
+        [] (const RouteMapping* routeMapping) {
+            return routeMapping->localRoute() == "/";
+        }
+    );
+
+    if (iterator == m_mappings->cend()) return;
+
+    m_rootMapping = *iterator;
 }

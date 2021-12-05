@@ -3,6 +3,7 @@
 #include <QFutureWatcher>
 #include <QFuture>
 #include <QByteArray>
+#include <QTextStream>
 
 HttpProxyServer::HttpProxyServer(QObject *parent) : QTcpServer(parent)
 {
@@ -58,6 +59,7 @@ void HttpProxyServer::incomingConnection(qintptr socketDescriptor)
 
 void HttpProxyServer::processSocket(int socket)
 {
+    qDebug() << "incoming connection " << socket;
     QTcpSocket tcpSocket;
     if (!tcpSocket.setSocketDescriptor(socket)) {
         qWarning() << "Error while try read socket descriptor: " << tcpSocket.errorString();
@@ -66,6 +68,7 @@ void HttpProxyServer::processSocket(int socket)
 
     tcpSocket.waitForReadyRead();
     auto firstLine = tcpSocket.readLine(3500);
+    qDebug() << firstLine;
     auto request = tcpSocket.readAll();
 
     auto parts = firstLine.split(' ');
@@ -83,30 +86,39 @@ void HttpProxyServer::processSocket(int socket)
         return;
     }
 
-    qInfo() << parts[0] + " " + parts[1];
+    QTcpSocket* innerTcpSocket = createSocket(*mapping);
+    if (innerTcpSocket == nullptr) return;
 
-    QTcpSocket innerTcpSocket;
-    innerTcpSocket.connectToHost(mapping->getExternalHost(), mapping->getExternalPort());
-    if (!innerTcpSocket.waitForConnected()) {
-        qInfo() << "Failed connect" << innerTcpSocket.errorString();
-        return;
-    }
     parts[1] = mapping->mapLocalToExternal(currentRoute).toUtf8();
-    innerTcpSocket.write(parts.join(' '));
-    innerTcpSocket.write(request);
-    innerTcpSocket.waitForReadyRead();
-    auto response = innerTcpSocket.readAll();
+
+    innerTcpSocket->write(parts.join(' '));
+    QTextStream requestData(request);
+    QString currentLine;
+    while (requestData.readLineInto(&currentLine)) {
+        if (currentLine.startsWith("Host: ")) {
+            auto mappedHost = "Host: " + mapping->getExternalHost() + ":" + QString::number(mapping->getExternalPort()) + "\r\n";
+            innerTcpSocket->write(mappedHost.toUtf8());
+        } else {
+            auto line = currentLine + "\r\n";
+            innerTcpSocket->write(line.toUtf8());
+        }
+    }
+
+    innerTcpSocket->waitForReadyRead();
+    auto response = innerTcpSocket->readAll();
 
     if (response.contains("Accept-Ranges: bytes")) {
         while (true) {
-            innerTcpSocket.waitForReadyRead(10);
-            auto bytesCount = innerTcpSocket.bytesAvailable();
-            if (bytesCount == 0 || innerTcpSocket.atEnd()) break;
+            innerTcpSocket->waitForReadyRead(10);
+            auto bytesCount = innerTcpSocket->bytesAvailable();
+            if (bytesCount == 0 || innerTcpSocket->atEnd()) break;
 
-            auto bytes = innerTcpSocket.read(bytesCount);
+            auto bytes = innerTcpSocket->read(bytesCount);
             response.append(bytes);
         }
     }
+
+    innerTcpSocket->disconnectFromHost();
 
     tcpSocket.write(response);
     closeSocket(tcpSocket);
@@ -118,4 +130,28 @@ void HttpProxyServer::closeSocket(QTcpSocket &socket)
 {
     socket.waitForBytesWritten(2000);
     socket.disconnectFromHost();
+}
+
+QTcpSocket* HttpProxyServer::createSocket(const RouteMapping &mapping)
+{
+    auto isSecure = mapping.isExternalSecure();
+    if (isSecure) {
+        auto socket = new QSslSocket();
+        socket->connectToHostEncrypted(mapping.getExternalHost(), mapping.getExternalPort());
+        if (!socket->waitForEncrypted(2000)) {
+            qWarning() << "Error while TLS handshake " << mapping.getExternalHost() << mapping.getExternalPort() << " " << socket->errorString();
+            return nullptr;
+        }
+        return socket;
+    } else {
+        auto socket = new QTcpSocket();
+        socket->connectToHost(mapping.getExternalHost(), mapping.getExternalPort());
+        if (!socket->waitForConnected()) {
+            qWarning() << "Failed connect" << mapping.getExternalHost() << mapping.getExternalPort() << " " << socket->errorString();
+            return nullptr;
+        }
+        return socket;
+    }
+
+    return nullptr;
 }

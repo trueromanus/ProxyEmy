@@ -12,6 +12,7 @@ private:
     QString m_localRoute { "" };
     QString m_externalRoute { "" };
     QUrl m_externalRouteUrl { QUrl("http://localhost") };
+    QString m_secureScheme { "https" };
 
 public:
     explicit RouteMapping();
@@ -25,9 +26,10 @@ public:
     QString externalRoute() const noexcept { return m_externalRoute; }
     void setExternalRoute(const QString& externalRoute) noexcept;
 
-    QString getExternalHost() noexcept;
-    int getExternalPort() noexcept;
-    QString mapLocalToExternal(const QString& currentRoute) noexcept;
+    QString getExternalHost() const noexcept;
+    int getExternalPort() const noexcept;
+    QString mapLocalToExternal(const QString& currentRoute) const noexcept;
+    bool isExternalSecure() const noexcept;
 
 };
 

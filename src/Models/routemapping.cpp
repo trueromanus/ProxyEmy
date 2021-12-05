@@ -11,19 +11,31 @@ void RouteMapping::setExternalRoute(const QString &externalRoute) noexcept
     m_externalRouteUrl = QUrl(externalRoute);
 }
 
-QString RouteMapping::getExternalHost() noexcept
+QString RouteMapping::getExternalHost() const noexcept
 {
     return m_externalRouteUrl.host();
 }
 
-int RouteMapping::getExternalPort() noexcept
+int RouteMapping::getExternalPort() const noexcept
 {
-    return m_externalRouteUrl.port();
+    auto port = m_externalRouteUrl.port();
+
+    if (port == -1) return isExternalSecure() ? 443 : 80;
+
+    return port;
 }
 
-QString RouteMapping::mapLocalToExternal(const QString& currentRoute) noexcept
+QString RouteMapping::mapLocalToExternal(const QString& currentRoute) const noexcept
 {
     if (m_localRoute == "/") return currentRoute;
 
-    return currentRoute.mid(m_localRoute.length());
+    auto path = currentRoute.mid(m_localRoute.length());
+    if (path.isEmpty()) return "/";
+
+    return path;
+}
+
+bool RouteMapping::isExternalSecure() const noexcept
+{
+    return m_externalRouteUrl.scheme().toLower() == m_secureScheme;
 }
