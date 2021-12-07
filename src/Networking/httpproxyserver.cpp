@@ -109,7 +109,7 @@ void HttpProxyServer::processSocket(int socket)
 
     if (response.contains("Accept-Ranges: bytes")) {
         while (true) {
-            innerTcpSocket->waitForReadyRead(10);
+            innerTcpSocket->waitForReadyRead(1000);
             auto bytesCount = innerTcpSocket->bytesAvailable();
             if (bytesCount == 0 || innerTcpSocket->atEnd()) break;
 
