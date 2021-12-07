@@ -104,23 +104,20 @@ void HttpProxyServer::processSocket(int socket)
         }
     }
 
-    innerTcpSocket->waitForReadyRead();
-    auto response = innerTcpSocket->readAll();
+    while (true) {
+        innerTcpSocket->waitForReadyRead(1000);
+        auto bytesCount = innerTcpSocket->bytesAvailable();
+        if (bytesCount == 0 || innerTcpSocket->atEnd()) break;
 
-    if (response.contains("Accept-Ranges: bytes")) {
-        while (true) {
-            innerTcpSocket->waitForReadyRead(1000);
-            auto bytesCount = innerTcpSocket->bytesAvailable();
-            if (bytesCount == 0 || innerTcpSocket->atEnd()) break;
-
-            auto bytes = innerTcpSocket->read(bytesCount);
-            response.append(bytes);
-        }
+        auto bytes = innerTcpSocket->read(bytesCount);
+        tcpSocket.write(bytes);
+        tcpSocket.waitForBytesWritten();
     }
+
+    tcpSocket.waitForBytesWritten(1000);
 
     innerTcpSocket->disconnectFromHost();
 
-    tcpSocket.write(response);
     closeSocket(tcpSocket);
 
     return;
