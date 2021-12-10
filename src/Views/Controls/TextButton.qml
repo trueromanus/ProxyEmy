@@ -17,39 +17,46 @@
 */
 
 import QtQuick 2.15
-import QtQuick.Window 2.15
-import QtQuick.Controls 2.15
-import ProxyEmy.Backend
 
-ApplicationWindow {
-    minimumWidth: 510
-    width: 640
-    height: 480
-    visible: true
-    title: backend.windowTitle
-    background: Rectangle {
+Item {
+    id: root
+    height: 30
+    width: titleText.width + 40
+
+    property alias title: titleText.text
+    property bool disabled: false
+    property bool buttonHovered: false
+
+    signal pressed()
+
+    Rectangle {
+        id: background
+        color: disabled ? "#d1dade" : (buttonHovered ? "#169c81" : "#1ab394")
         anchors.fill: parent
-        color: "white"
+        radius: 3
     }
 
-    ServerDetailsView {
-        id: serverDetailsView
+    Text {
+        id: titleText
+        anchors.centerIn: parent
+        color: "#fff"
+        font.bold: true
+        font.pointSize: 10
+        verticalAlignment: Text.AlignVCenter
+    }
+
+    MouseArea {
+        id: mouseArea
+        hoverEnabled: true
         anchors.fill: parent
-    }
-
-    ProxyEmyBackend {
-        id: backend
-    }
-
-    HttpProxyServer {
-        id: httpProxyServer
-        configuration: configurationViewModel
-        Component.onDestruction: {
-            httpProxyServer.stopServer();
+        onPressed: {
+            root.pressed();
         }
-    }
-
-    ConfigurationViewModel {
-        id: configurationViewModel
+        onEntered: {
+            root.buttonHovered = true;
+        }
+        onExited: {
+            root.buttonHovered = false;
+        }
     }
 }

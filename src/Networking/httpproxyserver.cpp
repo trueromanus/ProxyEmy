@@ -1,3 +1,21 @@
+/*
+    ProxyEmy local proxy server
+    Copyright (C) 2022 Roman Vladimirov
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include "httpproxyserver.h"
 #include <QtConcurrent>
 #include <QFutureWatcher>
@@ -30,6 +48,7 @@ void HttpProxyServer::startServer()
     }
 
     qInfo() << "Server started listening on port " << port;
+    emit serverStartedChanged();
 }
 
 void HttpProxyServer::stopServer()
@@ -37,30 +56,24 @@ void HttpProxyServer::stopServer()
     if (!isListening()) return;
 
     close();
+    emit serverStartedChanged();
+}
+
+void HttpProxyServer::restartServer()
+{
+    stopServer();
+    startServer();
 }
 
 void HttpProxyServer::incomingConnection(qintptr socketDescriptor)
 {
-    QFuture data = QtConcurrent::run(&HttpProxyServer::processSocket, this, socketDescriptor);
-    /*QFutureWatcher<QString> dataWatcher(this);
-    connect(
-        &dataWatcher,
-        &QFutureWatcher<QString>::finished,
-        this,
-        [data] {
-            auto output = data.result();
-
-            qDebug() << " output " << output;
-
-        }
-    );
-    dataWatcher.setFuture(data);*/
+    auto future = QtConcurrent::run(&HttpProxyServer::processSocket, this, socketDescriptor);
 }
 
 void HttpProxyServer::processSocket(int socket)
 {
     qDebug() << "incoming connection " << socket;
-    QTcpSocket tcpSocket;
+    QTcpSocket tcpSocket(this);
     if (!tcpSocket.setSocketDescriptor(socket)) {
         qWarning() << "Error while try read socket descriptor: " << tcpSocket.errorString();
         return;
@@ -117,8 +130,10 @@ void HttpProxyServer::processSocket(int socket)
     tcpSocket.waitForBytesWritten(1000);
 
     innerTcpSocket->disconnectFromHost();
+    innerTcpSocket->deleteLater();
 
     closeSocket(tcpSocket);
+    tcpSocket.deleteLater();
 
     return;
 }
@@ -133,7 +148,7 @@ QTcpSocket* HttpProxyServer::createSocket(const RouteMapping &mapping)
 {
     auto isSecure = mapping.isExternalSecure();
     if (isSecure) {
-        auto socket = new QSslSocket();
+        auto socket = new QSslSocket(this);
         socket->connectToHostEncrypted(mapping.getExternalHost(), mapping.getExternalPort());
         if (!socket->waitForEncrypted(2000)) {
             qWarning() << "Error while TLS handshake " << mapping.getExternalHost() << mapping.getExternalPort() << " " << socket->errorString();
@@ -141,7 +156,7 @@ QTcpSocket* HttpProxyServer::createSocket(const RouteMapping &mapping)
         }
         return socket;
     } else {
-        auto socket = new QTcpSocket();
+        auto socket = new QTcpSocket(this);
         socket->connectToHost(mapping.getExternalHost(), mapping.getExternalPort());
         if (!socket->waitForConnected()) {
             qWarning() << "Failed connect" << mapping.getExternalHost() << mapping.getExternalPort() << " " << socket->errorString();

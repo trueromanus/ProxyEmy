@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>ServerDetailsView.qml</file>
+        <file>Views/Controls/TextButton.qml</file>
+        <file>Views/Controls/BorderedPanel.qml</file>
     </qresource>
 </RCC>
