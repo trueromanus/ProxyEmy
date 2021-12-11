@@ -98,12 +98,12 @@ bool ConfigurationViewModel::readPort(const YAML::Node &node) noexcept
 
 bool ConfigurationViewModel::readAddresses(const YAML::Node &node) noexcept
 {
-    if (!node["addresses"]) {
+    if (!node["aliases"]) {
         qInfo() << "YAML don't contain addresses sequence!";
         return false;
     }
 
-    auto addressNode = node["addresses"];
+    auto addressNode = node["aliases"];
     if (!addressNode.IsSequence()) {
         qInfo() << "YAML contain addresses tag but it not sequence!";
         return false;

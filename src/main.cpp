@@ -38,7 +38,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<HttpProxyServer>("ProxyEmy.Backend", 1, 0, "HttpProxyServer");
     qmlRegisterType<ConfigurationViewModel>("ProxyEmy.Backend", 1, 0, "ConfigurationViewModel");
 
-#ifdef RELEASE
+#ifdef QT_DEBUG
+#else
     LoggerFile.reset(new QFile("session.log"));
     LoggerFile.data()->open(QFile::WriteOnly | QFile::Text);
     qInstallMessageHandler(messageHandler);
