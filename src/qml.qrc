@@ -4,5 +4,6 @@
         <file>ServerDetailsView.qml</file>
         <file>Views/Controls/TextButton.qml</file>
         <file>Views/Controls/BorderedPanel.qml</file>
+        <file>Views/Controls/LinkedText.qml</file>
     </qresource>
 </RCC>

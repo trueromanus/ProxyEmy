@@ -22,6 +22,8 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QRegularExpression>
+#include <QDesktopServices>
+#include <QUrl>
 
 ConfigurationViewModel::ConfigurationViewModel(QObject *parent) : QObject(parent)
 {
@@ -30,6 +32,7 @@ ConfigurationViewModel::ConfigurationViewModel(QObject *parent) : QObject(parent
         auto yamlPath = arguments.value(1);
         qInfo() << "YAML passed as parameter: " << yamlPath;
         readYaml(yamlPath);
+        setupYamlPath(yamlPath);
         return;
     }
 
@@ -37,9 +40,11 @@ ConfigurationViewModel::ConfigurationViewModel(QObject *parent) : QObject(parent
     if (QFile::exists(folderYamlPath)) {
         qInfo() << "YAML finded in current folder: " << QDir::currentPath();
         readYaml(folderYamlPath);
+        setupYamlPath(folderYamlPath);
     }
 
     setupRootMapping();
+    m_configurationMappingListModel->setup(m_mappings);
 }
 
 RouteMapping *ConfigurationViewModel::getMappingByRoute(const QString &route)
@@ -55,6 +60,16 @@ RouteMapping *ConfigurationViewModel::getMappingByRoute(const QString &route)
     if (iterator == m_mappings->cend()) return m_rootMapping == nullptr ? nullptr : m_rootMapping;
 
     return *iterator;
+}
+
+void ConfigurationViewModel::openConfigFolder() const noexcept
+{
+#ifdef Q_OS_WIN
+    auto url = "file:///" + m_pathToYaml;
+#else
+    auto url = "file://" + m_pathToYaml;
+#endif
+    QDesktopServices::openUrl(QUrl(url));
 }
 
 void ConfigurationViewModel::readYaml(const QString &path) noexcept
@@ -197,4 +212,11 @@ void ConfigurationViewModel::setupRootMapping() noexcept
     if (iterator == m_mappings->cend()) return;
 
     m_rootMapping = *iterator;
+}
+
+void ConfigurationViewModel::setupYamlPath(const QString& path) noexcept
+{
+    m_isConfigReaded = true;
+    auto currentDir = QDir::current();
+    m_pathToYaml = currentDir.absoluteFilePath(path);
 }

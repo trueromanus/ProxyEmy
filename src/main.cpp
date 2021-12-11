@@ -22,6 +22,7 @@
 #include <QDateTime>
 #include <QScopedPointer>
 #include <QQmlApplicationEngine>
+#include <QQuickStyle>
 #include "proxyemybackend.h"
 #include "Networking/httpproxyserver.h"
 #include "ViewModels/configurationviewmodel.h"
@@ -33,6 +34,8 @@ void messageHandler(QtMsgType type, const QMessageLogContext &context, const QSt
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
+    QQuickStyle::setStyle("Universal");
 
     qmlRegisterType<ProxyEmyBackend>("ProxyEmy.Backend", 1, 0, "ProxyEmyBackend");
     qmlRegisterType<HttpProxyServer>("ProxyEmy.Backend", 1, 0, "HttpProxyServer");

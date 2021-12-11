@@ -20,13 +20,14 @@ else ()
     set(WIN32_ON_OFF_SWITCH "")
 endif ()
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Quick LinguistTools Concurrent Qml REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick LinguistTools Network WebSockets Concurrent Qml REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Quick LinguistTools Concurrent Qml QuickControls2 REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick LinguistTools Network WebSockets Concurrent Qml QuickControls2 REQUIRED)
 
 set(PROJECT_SOURCES
         main.cpp
         ViewModels/configurationviewmodel.cpp ViewModels/configurationviewmodel.h
         Networking/httpproxyserver.cpp Networking/httpproxyserver.h
+        ListModels/configurationmappinglistmodel.h ListModels/configurationmappinglistmodel.cpp
         proxyemybackend.cpp proxyemybackend.h
         Models/routemapping.h Models/routemapping.cpp
         qml.qrc
@@ -55,6 +56,7 @@ target_link_libraries(ProxyEmy
   PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick)
 target_link_libraries(ProxyEmy PRIVATE Qt6::Concurrent)
 target_link_libraries(ProxyEmy PRIVATE Qt6::Qml)
+target_link_libraries(ProxyEmy PRIVATE Qt6::QuickControls2)
 
 FetchContent_Declare(
                 yaml-cpp

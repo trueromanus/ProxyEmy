@@ -16,8 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import QtQuick 2.15
-import QtQuick.Layouts 2.15
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
 import "Views/Controls"
 
 Item {
@@ -84,16 +85,23 @@ Item {
                         font.pointSize: 11
                     }
 
-                    Text {
+                    LinkedText {
+                        visible: configurationViewModel.isConfigReaded
+                        text: "Configuration readed <a href='http://config'>from file</a>"
+                        minimumPointSize: 9
+                        font.pointSize: 9
+                        linkTooltip: configurationViewModel.pathToYaml
+                        onLinkActivated: {
+                            configurationViewModel.openConfigFolder()
+                        }
+                    }
+
+                    LinkedText {
                         visible: httpProxyServer.serverStarted
+                        minimumPointSize: 9
+                        font.pointSize: 9
                         text: "Open in browser <a href='http://localhost:" + configurationViewModel.port + "'>http://localhost:" + configurationViewModel.port + "/</a>"
                         onLinkActivated: Qt.openUrlExternally(link)
-
-                        MouseArea {
-                            anchors.fill: parent
-                            acceptedButtons: Qt.NoButton
-                            cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
-                        }
                     }
                 }
             }
