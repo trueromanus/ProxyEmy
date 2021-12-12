@@ -115,7 +115,7 @@ bool ConfigurationViewModel::readAddresses(const YAML::Node &node) noexcept
 {
     if (!node["aliases"]) {
         qInfo() << "YAML don't contain addresses sequence!";
-        return false;
+        return true;
     }
 
     auto addressNode = node["aliases"];
@@ -195,8 +195,8 @@ QString ConfigurationViewModel::processExternalRoute(QString&& externalRoute) co
             externalRoute.replace(word, m_addresses->value(address));
         }
     }
-
-    return QString(externalRoute);
+    QString result = std::move(externalRoute);
+    return result;
 }
 
 void ConfigurationViewModel::setupRootMapping() noexcept

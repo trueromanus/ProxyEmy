@@ -92,7 +92,7 @@ Item {
                         font.pointSize: 9
                         linkTooltip: configurationViewModel.pathToYaml
                         onLinkActivated: {
-                            configurationViewModel.openConfigFolder()
+                            configurationViewModel.openConfigFolder();
                         }
                     }
 
@@ -101,7 +101,9 @@ Item {
                         minimumPointSize: 9
                         font.pointSize: 9
                         text: "Open in browser <a href='http://localhost:" + configurationViewModel.port + "'>http://localhost:" + configurationViewModel.port + "/</a>"
-                        onLinkActivated: Qt.openUrlExternally(link)
+                        onLinkActivated: function(link) {
+                            Qt.openUrlExternally(link);
+                        }
                     }
                 }
             }

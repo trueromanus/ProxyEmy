@@ -73,7 +73,7 @@ void HttpProxyServer::incomingConnection(qintptr socketDescriptor)
 void HttpProxyServer::processSocket(int socket)
 {
     qDebug() << "incoming connection " << socket;
-    QTcpSocket tcpSocket(this);
+    QTcpSocket tcpSocket;
     if (!tcpSocket.setSocketDescriptor(socket)) {
         qWarning() << "Error while try read socket descriptor: " << tcpSocket.errorString();
         return;
@@ -133,7 +133,6 @@ void HttpProxyServer::processSocket(int socket)
     innerTcpSocket->deleteLater();
 
     closeSocket(tcpSocket);
-    tcpSocket.deleteLater();
 
     return;
 }
@@ -142,13 +141,14 @@ void HttpProxyServer::closeSocket(QTcpSocket &socket)
 {
     socket.waitForBytesWritten(2000);
     socket.disconnectFromHost();
+    socket.deleteLater();
 }
 
 QTcpSocket* HttpProxyServer::createSocket(const RouteMapping &mapping)
 {
     auto isSecure = mapping.isExternalSecure();
     if (isSecure) {
-        auto socket = new QSslSocket(this);
+        auto socket = new QSslSocket();
         socket->connectToHostEncrypted(mapping.getExternalHost(), mapping.getExternalPort());
         if (!socket->waitForEncrypted(2000)) {
             qWarning() << "Error while TLS handshake " << mapping.getExternalHost() << mapping.getExternalPort() << " " << socket->errorString();
@@ -156,7 +156,7 @@ QTcpSocket* HttpProxyServer::createSocket(const RouteMapping &mapping)
         }
         return socket;
     } else {
-        auto socket = new QTcpSocket(this);
+        auto socket = new QTcpSocket();
         socket->connectToHost(mapping.getExternalHost(), mapping.getExternalPort());
         if (!socket->waitForConnected()) {
             qWarning() << "Failed connect" << mapping.getExternalHost() << mapping.getExternalPort() << " " << socket->errorString();
