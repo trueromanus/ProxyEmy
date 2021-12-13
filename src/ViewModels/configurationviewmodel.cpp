@@ -33,14 +33,10 @@ ConfigurationViewModel::ConfigurationViewModel(QObject *parent) : QObject(parent
         qInfo() << "YAML passed as parameter: " << yamlPath;
         readYaml(yamlPath);
         setupYamlPath(yamlPath);
-        return;
-    }
-
-    auto folderYamlPath = "proxyemy.yml";
-    if (QFile::exists(folderYamlPath)) {
+    } else if (QFile::exists(m_folderYamlPath)) {
         qInfo() << "YAML finded in current folder: " << QDir::currentPath();
-        readYaml(folderYamlPath);
-        setupYamlPath(folderYamlPath);
+        readYaml(m_folderYamlPath);
+        setupYamlPath(m_folderYamlPath);
     }
 
     setupRootMapping();
@@ -163,9 +159,9 @@ bool ConfigurationViewModel::readMappings(const YAML::Node &node) noexcept
         if (parts.length() != 3) continue;
 
         auto routeMapping = new RouteMapping();
-
-        if (parts.value(0) == "http") routeMapping->setBindingType(1);
-        if (parts.value(0) == "https") routeMapping->setBindingType(2);
+        auto bindingType = parts.value(0);
+        if (bindingType == "http") routeMapping->setBindingType(1);
+        if (bindingType == "https") routeMapping->setBindingType(2);
         //TODO: make support WebSocket
         //if (parts.value(0) == "ws") routeMapping->setBindingType(3);
         //if (parts.value(0) == "wss") routeMapping->setBindingType(4);

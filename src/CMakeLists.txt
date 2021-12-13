@@ -58,11 +58,20 @@ target_link_libraries(ProxyEmy PRIVATE Qt6::Concurrent)
 target_link_libraries(ProxyEmy PRIVATE Qt6::Qml)
 target_link_libraries(ProxyEmy PRIVATE Qt6::QuickControls2)
 
+# uncomment for using new QML_ELEMENT way
+#qt_add_qml_module(ProxyEmy
+#    URI ProxyEmy.Backend
+#    VERSION 1.0
+#    RESOURCE_PREFIX /proxy.emy/imports
+#    SOURCES
+#        proxyemybackend.cpp proxyemybackend.h
+#)
+
 FetchContent_Declare(
                 yaml-cpp
                 GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
                 GIT_SHALLOW	ON
-                GIT_TAG yaml-cpp-0.6.3
+                GIT_TAG yaml-cpp-0.7.0
         )
 FetchContent_GetProperties(yaml-cpp)
 if(NOT yaml-cpp_POPULATED)

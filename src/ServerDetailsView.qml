@@ -26,7 +26,7 @@ Item {
 
     RowLayout {
         anchors.fill: parent
-        spacing: 2
+        spacing: 0
 
         Item {
             Layout.fillHeight: true
@@ -113,7 +113,46 @@ Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
 
+            BorderedPanel {
+                anchors.fill: parent
+                anchors.topMargin: 2
+                anchors.bottomMargin: 2
+                anchors.rightMargin: 2
 
+                TableView {
+                    id: mappingsTable
+                    clip: true
+                    anchors.fill: parent
+                    anchors.margins: 4
+                    columnSpacing: 1
+                    rowSpacing: 1
+                    model: configurationViewModel.mappingListModel
+                    syncDirection: Qt.Vertical
+                    ScrollBar.vertical: ScrollBar{
+                        active: true
+                    }
+                    columnWidthProvider: function (column) {
+                        switch (column) {
+                            case 0:
+                                return 50 * mappingsTable.width / 100;
+                            case 1:
+                                return 50 * mappingsTable.width / 100;
+                        }
+                        return 0;
+                    }
+                    delegate: Rectangle {
+                        implicitWidth: 20
+                        implicitHeight: 20
+
+                        Text {
+                            visible: column !== 3
+                            text: display
+                        }
+
+                    }
+                    onWidthChanged: mappingsTable.forceLayout()
+                }
+            }
         }
     }
 }
