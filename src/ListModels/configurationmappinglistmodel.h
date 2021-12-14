@@ -25,12 +25,6 @@ private:
         ExternalRouteRole
     };
 
-    enum CommonItemRoles {
-        IdRole = Qt::UserRole + 1,
-        LocalRouteRole,
-        ExternalRouteRole
-    };
-
 public:
     explicit ConfigurationMappingListModel(QObject *parent = nullptr);
 
