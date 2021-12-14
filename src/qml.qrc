@@ -5,5 +5,8 @@
         <file>Views/Controls/TextButton.qml</file>
         <file>Views/Controls/BorderedPanel.qml</file>
         <file>Views/Controls/LinkedText.qml</file>
+        <file>Views/Icons/delete.svg</file>
+        <file>Views/Controls/IconButton.qml</file>
+        <file>Views/Icons/emptybox.svg</file>
     </qresource>
 </RCC>

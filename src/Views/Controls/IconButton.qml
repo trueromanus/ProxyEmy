@@ -17,44 +17,35 @@
 */
 
 import QtQuick
-import QtQuick.Window
-import QtQuick.Controls
-import ProxyEmy.Backend
 
-ApplicationWindow {
-    minimumWidth: 510
-    width: 640
-    height: 480
-    visible: true
-    title: backend.windowTitle
-    background: Rectangle {
+Item {
+    id: root
+    property alias icon: image.source
+    property alias iconWidth: image.width
+    property alias iconHeight: image.height
+
+    signal pressed()
+
+    Image {
+        id: image
+        anchors.centerIn: parent
+        visible: column === 2
+        width: 22
+        height: 22
+        mipmap: true
+    }
+
+    MouseArea {
         anchors.fill: parent
-        color: "white"
-    }
-
-    ServerDetailsView {
-        id: serverDetailsView
-        anchors.fill: parent
-    }
-
-    ProxyEmyBackend {
-        id: backend
-    }
-
-    HttpProxyServer {
-        id: httpProxyServer
-        configuration: configurationViewModel
-        Component.onDestruction: {
-            httpProxyServer.stopServer();
+        hoverEnabled: true
+        onPressed: {
+            root.pressed();
         }
-    }
-
-    ConfigurationViewModel {
-        id: configurationViewModel
-    }
-
-    Item {
-        id: storagePaths
-        property string icons: Qt.resolvedUrl("../Views/Icons/")
+        onEntered: {
+            cursorShape = Qt.PointingHandCursor;
+        }
+        onExited: {
+            cursorShape = Qt.ArrowCursor;
+        }
     }
 }

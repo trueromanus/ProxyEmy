@@ -27,17 +27,18 @@ class RouteMapping
 {
 
 private:
-    int m_bindingType { 0 };
+    int m_id { 0 };
     QString m_localRoute { "" };
     QString m_externalRoute { "" };
     QUrl m_externalRouteUrl { QUrl("http://localhost") };
     QString m_secureScheme { "https" };
+    QString m_externalRouteOriginal { "" };
 
 public:
     explicit RouteMapping();
 
-    int bindingType() const noexcept { return m_bindingType; }
-    void setBindingType(const int bindingType) noexcept { m_bindingType = bindingType; };
+    int id() const noexcept { return m_id; }
+    void setId(const int id) noexcept { m_id = id; }
 
     QString localRoute() const noexcept { return m_localRoute; }
     void setLocalRoute(const QString& localRoute) noexcept { m_localRoute = localRoute; };
@@ -47,9 +48,12 @@ public:
 
     QString getExternalHost() const noexcept;
     int getExternalPort() const noexcept;
+
+    QString externalRouteOriginal() const noexcept { return m_externalRouteOriginal; };
+    void setExternalRouteOriginal(const QString& externalRouteOriginal) noexcept;
+
     QString mapLocalToExternal(const QString& currentRoute) const noexcept;
     bool isExternalSecure() const noexcept;
-
 };
 
 #endif // ROUTEMAPPING_H

@@ -31,15 +31,15 @@ QScopedPointer<QFile> LoggerFile;
 
 void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
+void registerQmlTypes();
+
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
     QQuickStyle::setStyle("Universal");
 
-    qmlRegisterType<ProxyEmyBackend>("ProxyEmy.Backend", 1, 0, "ProxyEmyBackend");
-    qmlRegisterType<HttpProxyServer>("ProxyEmy.Backend", 1, 0, "HttpProxyServer");
-    qmlRegisterType<ConfigurationViewModel>("ProxyEmy.Backend", 1, 0, "ConfigurationViewModel");
+    registerQmlTypes();
 
 #ifdef QT_DEBUG
 #else
@@ -62,6 +62,13 @@ int main(int argc, char *argv[])
     engine.load(url);
 
     return app.exec();
+}
+
+void registerQmlTypes() {
+    qmlRegisterType<ProxyEmyBackend>("ProxyEmy.Backend", 1, 0, "ProxyEmyBackend");
+    qmlRegisterType<HttpProxyServer>("ProxyEmy.Backend", 1, 0, "HttpProxyServer");
+    qmlRegisterType<ConfigurationViewModel>("ProxyEmy.Backend", 1, 0, "ConfigurationViewModel");
+    qmlRegisterType<ConfigurationMappingListModel>("ProxyEmy.Backend", 1, 0, "ConfigurationMappingListModel");
 }
 
 void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)

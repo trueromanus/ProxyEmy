@@ -39,12 +39,14 @@ class ConfigurationViewModel : public QObject
 
 private:
     int m_port { 8080 };
+    const QString m_folderYamlPath { "proxyemy.yml" };
     QScopedPointer<QMap<QString, QString>> m_addresses { new QMap<QString, QString>() };
     QSharedPointer<QList<RouteMapping*>> m_mappings { new QList<RouteMapping*>() };
     RouteMapping* m_rootMapping { nullptr };
     QScopedPointer<ConfigurationMappingListModel> m_configurationMappingListModel { new ConfigurationMappingListModel() };
     QString m_pathToYaml { "" };
     bool m_isConfigReaded { false };
+    int m_lastIdentifier { -1 };
 
 public:
     explicit ConfigurationViewModel(QObject *parent = nullptr);

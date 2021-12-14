@@ -33,14 +33,10 @@ ConfigurationViewModel::ConfigurationViewModel(QObject *parent) : QObject(parent
         qInfo() << "YAML passed as parameter: " << yamlPath;
         readYaml(yamlPath);
         setupYamlPath(yamlPath);
-        return;
-    }
-
-    auto folderYamlPath = "proxyemy.yml";
-    if (QFile::exists(folderYamlPath)) {
+    } else if (QFile::exists(m_folderYamlPath)) {
         qInfo() << "YAML finded in current folder: " << QDir::currentPath();
-        readYaml(folderYamlPath);
-        setupYamlPath(folderYamlPath);
+        readYaml(m_folderYamlPath);
+        setupYamlPath(m_folderYamlPath);
     }
 
     setupRootMapping();
@@ -160,19 +156,15 @@ bool ConfigurationViewModel::readMappings(const YAML::Node &node) noexcept
         auto mappingStdString = scalarNode.as<std::string>("");
         auto mappingString = QString::fromStdString(mappingStdString);
         auto parts = mappingString.split(" ");
-        if (parts.length() != 3) continue;
+        if (parts.length() != 2) continue;
+
+        m_lastIdentifier++;
 
         auto routeMapping = new RouteMapping();
-
-        if (parts.value(0) == "http") routeMapping->setBindingType(1);
-        if (parts.value(0) == "https") routeMapping->setBindingType(2);
-        //TODO: make support WebSocket
-        //if (parts.value(0) == "ws") routeMapping->setBindingType(3);
-        //if (parts.value(0) == "wss") routeMapping->setBindingType(4);
-
-        routeMapping->setLocalRoute(parts.value(1));
-
-        routeMapping->setExternalRoute(processExternalRoute(parts.value(2)));
+        routeMapping->setId(m_lastIdentifier);
+        routeMapping->setLocalRoute(parts.value(0));
+        routeMapping->setExternalRouteOriginal(parts.value(1));
+        routeMapping->setExternalRoute(processExternalRoute(parts.value(1)));
 
         m_mappings->append(routeMapping);
 

@@ -44,6 +44,11 @@ int RouteMapping::getExternalPort() const noexcept
     return port;
 }
 
+void RouteMapping::setExternalRouteOriginal(const QString& externalRouteOriginal) noexcept
+{
+    m_externalRouteOriginal = externalRouteOriginal;
+}
+
 QString RouteMapping::mapLocalToExternal(const QString& currentRoute) const noexcept
 {
     if (m_localRoute == "/") return currentRoute;
