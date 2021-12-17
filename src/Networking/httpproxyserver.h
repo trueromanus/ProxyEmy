@@ -34,7 +34,7 @@ class HttpProxyServer : public QTcpServer
     Q_PROPERTY(bool serverStarted READ serverStarted NOTIFY serverStartedChanged)
 
 private:
-    const QString m_EmptyResponse = "HTTP/1.1 404 Not Found\r\nServer: ProxyEmy\r\n\r\n<b>404 Not Found</b>";
+    const QString m_EmptyResponse = "HTTP/1.1 404 Not Found\r\nServer: ProxyEmy\r\nContent-Type: text/plain\r\nContent-Length: 20\r\nConnection: close\r\n\r\n<b>404 Not Found</b>";
     ConfigurationViewModel* m_configuration { nullptr };
 
 protected:
@@ -56,6 +56,8 @@ private:
     void processSocket(int socket);
     void closeSocket(QTcpSocket& socket);
     QTcpSocket* createSocket(const RouteMapping& mapping);
+    QByteArray getRoute(QByteArray bytes);
+    QByteArray replaceHost(QByteArray bytes, RouteMapping * mapping);
 
 signals:
     void configurationChanged();

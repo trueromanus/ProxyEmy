@@ -72,49 +72,53 @@ void HttpProxyServer::incomingConnection(qintptr socketDescriptor)
 
 void HttpProxyServer::processSocket(int socket)
 {
-    qDebug() << "incoming connection " << socket;
     QTcpSocket tcpSocket;
     if (!tcpSocket.setSocketDescriptor(socket)) {
         qWarning() << "Error while try read socket descriptor: " << tcpSocket.errorString();
         return;
     }
 
-    tcpSocket.waitForReadyRead();
-    auto firstLine = tcpSocket.readLine(3500);
-    qDebug() << firstLine;
-    auto request = tcpSocket.readAll();
+    RouteMapping *currentRoute = nullptr;
+    QTcpSocket* innerTcpSocket = nullptr;
 
-    auto parts = firstLine.split(' ');
-    if (parts.count() != 3) {
-        qWarning() << "Error while try read request first line from socket " << socket;
-        closeSocket(tcpSocket);
-        return;
-    }
-    auto currentRoute = parts[1];
+    while (true) {
+        tcpSocket.waitForReadyRead(1000);
+        auto bytesCount = tcpSocket.bytesAvailable();
+        if (bytesCount == 0 || tcpSocket.atEnd()) break;
 
-    auto mapping = m_configuration->getMappingByRoute(currentRoute);
-    if (mapping == nullptr) {
-        tcpSocket.write(m_EmptyResponse.toUtf8());
-        closeSocket(tcpSocket);
-        return;
-    }
+        auto bytes = tcpSocket.read(bytesCount);
 
-    QTcpSocket* innerTcpSocket = createSocket(*mapping);
-    if (innerTcpSocket == nullptr) return;
-
-    parts[1] = mapping->mapLocalToExternal(currentRoute).toUtf8();
-
-    innerTcpSocket->write(parts.join(' '));
-    QTextStream requestData(request);
-    QString currentLine;
-    while (requestData.readLineInto(&currentLine)) {
-        if (currentLine.startsWith("Host: ")) {
-            auto mappedHost = "Host: " + mapping->getExternalHost() + ":" + QString::number(mapping->getExternalPort()) + "\r\n";
-            innerTcpSocket->write(mappedHost.toUtf8());
-        } else {
-            auto line = currentLine + "\r\n";
-            innerTcpSocket->write(line.toUtf8());
+        if (currentRoute == nullptr) {
+            auto route = getRoute(bytes);
+            if (route.isEmpty()) {
+                qWarning() << "Error while try read request first line from socket " << socket;
+                closeSocket(tcpSocket);
+                break;
+            }
+            auto currentRoute = m_configuration->getMappingByRoute(route);
+            if (currentRoute == nullptr) {
+                tcpSocket.write(m_EmptyResponse.toUtf8());
+                closeSocket(tcpSocket);
+                break;
+            }
+            innerTcpSocket = createSocket(*currentRoute);
+            if (innerTcpSocket == nullptr) {
+                closeSocket(tcpSocket);
+                break;
+            }
+            innerTcpSocket->write(replaceHost(bytes, currentRoute));
+            innerTcpSocket->waitForBytesWritten(2000);
+            break;
         }
+
+        innerTcpSocket->write(bytes);
+        innerTcpSocket->waitForBytesWritten(2000);
+    }
+
+    if (innerTcpSocket == nullptr) {
+        qWarning() << "Error while try read request headers from socket " << socket;
+        closeSocket(tcpSocket);
+        return;
     }
 
     while (true) {
@@ -166,4 +170,30 @@ QTcpSocket* HttpProxyServer::createSocket(const RouteMapping &mapping)
     }
 
     return nullptr;
+}
+
+QByteArray HttpProxyServer::getRoute(QByteArray bytes)
+{
+    auto index = bytes.indexOf("\r\n");
+    auto routeHeader = bytes.mid(0, index);
+    auto parts = routeHeader.split(' ');
+    if (parts.count() != 3) return "";
+
+    return parts[1];
+}
+
+QByteArray HttpProxyServer::replaceHost(QByteArray bytes, RouteMapping *mapping)
+{
+    auto index = bytes.indexOf("Host: ");
+    if (index == -1) return bytes;
+
+    auto endIndex = bytes.indexOf("\r\n", index);
+
+    auto leftPart = bytes.mid(0, index);
+    auto rightPart = bytes.mid(endIndex + 2);
+    auto host = "Host: " + mapping->getExternalHost() + ":" + QString::number(mapping->getExternalPort()) + "\r\n";
+    if (leftPart.contains("site-middle.jpg")) {
+        qDebug() << rightPart;
+    }
+    return leftPart + host.toUtf8() + rightPart;
 }

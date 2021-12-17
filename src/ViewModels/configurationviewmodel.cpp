@@ -86,6 +86,7 @@ void ConfigurationViewModel::readYaml(const QString &path) noexcept
         auto yamlRoot = YAML::Load(content.toStdString());
 
         if (!readPort(yamlRoot)) return;
+        if (!readSecurePort(yamlRoot)) return;
         if (!readAddresses(yamlRoot)) return;
         if (!readMappings(yamlRoot)) return;
 
@@ -103,6 +104,16 @@ bool ConfigurationViewModel::readPort(const YAML::Node &node) noexcept
     }
 
     m_port = port;
+
+    return true;
+}
+
+bool ConfigurationViewModel::readSecurePort(const YAML::Node &node) noexcept
+{
+    const int securePort = node["securePort"].as<int>(0);
+    if (securePort == 0) return true; // omit not critical
+
+    m_securePort = securePort;
 
     return true;
 }

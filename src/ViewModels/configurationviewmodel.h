@@ -39,6 +39,7 @@ class ConfigurationViewModel : public QObject
 
 private:
     int m_port { 8080 };
+    int m_securePort { 8081 };
     const QString m_folderYamlPath { "proxyemy.yml" };
     QScopedPointer<QMap<QString, QString>> m_addresses { new QMap<QString, QString>() };
     QSharedPointer<QList<RouteMapping*>> m_mappings { new QList<RouteMapping*>() };
@@ -65,6 +66,7 @@ public:
 private:
     void readYaml(const QString& path) noexcept;
     bool readPort(const YAML::Node& node) noexcept;
+    bool readSecurePort(const YAML::Node& node) noexcept;
     bool readAddresses(const YAML::Node& node) noexcept;
     bool readMappings(const YAML::Node& node) noexcept;
     QString processExternalRoute(QString&& externalRoute) const noexcept;
