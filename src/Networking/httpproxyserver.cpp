@@ -130,7 +130,7 @@ void HttpProxyServer::processSocket(int socket)
     tcpSocket.waitForBytesWritten(1000);
 
     innerTcpSocket->disconnectFromHost();
-    innerTcpSocket->deleteLater();
+    delete innerTcpSocket;
 
     closeSocket(tcpSocket);
 
