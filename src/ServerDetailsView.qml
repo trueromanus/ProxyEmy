@@ -100,7 +100,7 @@ Item {
                         visible: httpProxyServer.serverStarted
                         minimumPointSize: 9
                         font.pointSize: 9
-                        text: "Open in browser <a href='http://localhost:" + configurationViewModel.port + "'>http://localhost:" + configurationViewModel.port + "/</a>"
+                        text: "Open in browser <a href='" + configurationViewModel.serverProtocol + "://localhost:" + configurationViewModel.port + "'>" + configurationViewModel.serverProtocol + "://localhost:" + configurationViewModel.port + "/</a>"
                         onLinkActivated: function(link) {
                             Qt.openUrlExternally(link);
                         }

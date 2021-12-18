@@ -37,6 +37,7 @@ class ConfigurationViewModel : public QObject
     Q_PROPERTY(QString pathToYaml READ pathToYaml NOTIFY pathToYamlChanged)
     Q_PROPERTY(bool isConfigReaded READ isConfigReaded NOTIFY isConfigReadedChanged)
     Q_PROPERTY(bool isSecure READ isSecure NOTIFY isSecureChanged)
+    Q_PROPERTY(QString serverProtocol READ serverProtocol NOTIFY serverProtocolChanged)
 
 private:
     int m_port { 8080 };
@@ -62,6 +63,8 @@ public:
 
     bool isSecure() const noexcept { return m_isSecure; }
 
+    QString serverProtocol() const noexcept { return m_isSecure ? "https" : "http"; }
+
     RouteMapping* getMappingByRoute(const QString& route);
 
     Q_INVOKABLE void openConfigFolder() const noexcept;
@@ -82,6 +85,7 @@ signals:
     void pathToYamlChanged();
     void isConfigReadedChanged();
     void isSecureChanged();
+    void serverProtocolChanged();
 
 };
 
