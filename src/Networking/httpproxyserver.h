@@ -54,8 +54,11 @@ public:
 
 private:
     void processSocket(int socket);
-    void closeSocket(QTcpSocket& socket);
+    void closeSocket(QTcpSocket* socket);
     QTcpSocket* createSocket(const RouteMapping& mapping);
+    bool setupSocket(QTcpSocket& socket, const int socketDescriptor);
+    bool setupSslSocket(QSslSocket& socket, const int socketDescriptor);
+    QTcpSocket* createSocketFromDescription(const int socket);
     QByteArray getRoute(QByteArray bytes);
     QByteArray replaceHost(QByteArray bytes, RouteMapping * mapping);
 

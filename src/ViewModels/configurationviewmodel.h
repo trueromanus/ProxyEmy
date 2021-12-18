@@ -36,10 +36,11 @@ class ConfigurationViewModel : public QObject
     Q_PROPERTY(ConfigurationMappingListModel* mappingListModel READ mappingListModel NOTIFY mappingListModelChanged)
     Q_PROPERTY(QString pathToYaml READ pathToYaml NOTIFY pathToYamlChanged)
     Q_PROPERTY(bool isConfigReaded READ isConfigReaded NOTIFY isConfigReadedChanged)
+    Q_PROPERTY(bool isSecure READ isSecure NOTIFY isSecureChanged)
 
 private:
     int m_port { 8080 };
-    int m_securePort { 8081 };
+    bool m_isSecure { false };
     const QString m_folderYamlPath { "proxyemy.yml" };
     QScopedPointer<QMap<QString, QString>> m_addresses { new QMap<QString, QString>() };
     QSharedPointer<QList<RouteMapping*>> m_mappings { new QList<RouteMapping*>() };
@@ -58,6 +59,8 @@ public:
     QString pathToYaml() const noexcept { return m_pathToYaml; }
 
     bool isConfigReaded() const noexcept { return m_isConfigReaded; }
+
+    bool isSecure() const noexcept { return m_isSecure; }
 
     RouteMapping* getMappingByRoute(const QString& route);
 
@@ -78,6 +81,7 @@ signals:
     void mappingListModelChanged();
     void pathToYamlChanged();
     void isConfigReadedChanged();
+    void isSecureChanged();
 
 };
 

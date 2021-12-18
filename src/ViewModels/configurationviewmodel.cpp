@@ -110,10 +110,10 @@ bool ConfigurationViewModel::readPort(const YAML::Node &node) noexcept
 
 bool ConfigurationViewModel::readSecurePort(const YAML::Node &node) noexcept
 {
-    const int securePort = node["securePort"].as<int>(0);
-    if (securePort == 0) return true; // omit not critical
+    const bool isSecure = node["secure"].as<bool>(false);
+    if (isSecure == 0) return true; // omit not critical
 
-    m_securePort = securePort;
+    m_isSecure = isSecure;
 
     return true;
 }

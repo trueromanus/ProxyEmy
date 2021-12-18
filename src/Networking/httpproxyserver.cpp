@@ -22,6 +22,7 @@
 #include <QFuture>
 #include <QByteArray>
 #include <QTextStream>
+#include <QCoreApplication>
 
 HttpProxyServer::HttpProxyServer(QObject *parent) : QTcpServer(parent)
 {
@@ -72,21 +73,18 @@ void HttpProxyServer::incomingConnection(qintptr socketDescriptor)
 
 void HttpProxyServer::processSocket(int socket)
 {
-    QTcpSocket tcpSocket;
-    if (!tcpSocket.setSocketDescriptor(socket)) {
-        qWarning() << "Error while try read socket descriptor: " << tcpSocket.errorString();
-        return;
-    }
+    QTcpSocket* tcpSocket = createSocketFromDescription(socket);
+    if (tcpSocket == nullptr) return;
 
     RouteMapping *currentRoute = nullptr;
     QTcpSocket* innerTcpSocket = nullptr;
 
     while (true) {
-        tcpSocket.waitForReadyRead(1000);
-        auto bytesCount = tcpSocket.bytesAvailable();
-        if (bytesCount == 0 || tcpSocket.atEnd()) break;
+        tcpSocket->waitForReadyRead(1000);
+        auto bytesCount = tcpSocket->bytesAvailable();
+        if (bytesCount == 0 || tcpSocket->atEnd()) break;
 
-        auto bytes = tcpSocket.read(bytesCount);
+        auto bytes = tcpSocket->read(bytesCount);
 
         if (currentRoute == nullptr) {
             auto route = getRoute(bytes);
@@ -97,7 +95,7 @@ void HttpProxyServer::processSocket(int socket)
             }
             auto currentRoute = m_configuration->getMappingByRoute(route);
             if (currentRoute == nullptr) {
-                tcpSocket.write(m_EmptyResponse.toUtf8());
+                tcpSocket->write(m_EmptyResponse.toUtf8());
                 closeSocket(tcpSocket);
                 break;
             }
@@ -117,7 +115,6 @@ void HttpProxyServer::processSocket(int socket)
 
     if (innerTcpSocket == nullptr) {
         qWarning() << "Error while try read request headers from socket " << socket;
-        closeSocket(tcpSocket);
         return;
     }
 
@@ -127,11 +124,11 @@ void HttpProxyServer::processSocket(int socket)
         if (bytesCount == 0 || innerTcpSocket->atEnd()) break;
 
         auto bytes = innerTcpSocket->read(bytesCount);
-        tcpSocket.write(bytes);
-        tcpSocket.waitForBytesWritten();
+        tcpSocket->write(bytes);
+        tcpSocket->waitForBytesWritten();
     }
 
-    tcpSocket.waitForBytesWritten(1000);
+    tcpSocket->waitForBytesWritten(1000);
 
     innerTcpSocket->disconnectFromHost();
     delete innerTcpSocket;
@@ -141,11 +138,11 @@ void HttpProxyServer::processSocket(int socket)
     return;
 }
 
-void HttpProxyServer::closeSocket(QTcpSocket &socket)
+void HttpProxyServer::closeSocket(QTcpSocket* socket)
 {
-    socket.waitForBytesWritten(2000);
-    socket.disconnectFromHost();
-    socket.deleteLater();
+    socket->waitForBytesWritten(2000);
+    socket->disconnectFromHost();
+    delete socket;
 }
 
 QTcpSocket* HttpProxyServer::createSocket(const RouteMapping &mapping)
@@ -169,6 +166,50 @@ QTcpSocket* HttpProxyServer::createSocket(const RouteMapping &mapping)
         return socket;
     }
 
+    return nullptr;
+}
+
+bool HttpProxyServer::setupSocket(QTcpSocket &socket, const int socketDescriptor)
+{
+    if (!socket.setSocketDescriptor(socketDescriptor)) {
+        qWarning() << "Error while try read socket descriptor: " << socket.errorString();
+        return false;
+    }
+
+    return true;
+}
+
+bool HttpProxyServer::setupSslSocket(QSslSocket &socket, const int socketDescriptor)
+{
+    if (!socket.setSocketDescriptor(socketDescriptor)) {
+        qWarning() << "Error while try read socket descriptor: " << socket.errorString();
+        return false;
+    }
+
+    auto applicationPath = QCoreApplication::applicationDirPath();
+
+    socket.setLocalCertificate(applicationPath + "/certificate/server.crt", QSsl::Pem);
+    socket.setPrivateKey(applicationPath + "/certificate/server.key", QSsl::Rsa, QSsl::Pem);
+    socket.setPeerVerifyMode(QSslSocket::VerifyNone);
+    socket.setProtocol(QSsl::TlsV1_0OrLater);
+    socket.startServerEncryption();
+    return socket.waitForEncrypted(2000);
+}
+
+QTcpSocket *HttpProxyServer::createSocketFromDescription(const int socket)
+{
+    if (!m_configuration->isSecure()) {
+        auto tcpSocket = new QTcpSocket();
+        if (setupSocket(*tcpSocket, socket)) {
+            return tcpSocket;
+        }
+        return nullptr;
+    }
+
+    auto tcpSocket = new QSslSocket();
+    if (setupSslSocket(*tcpSocket, socket)) {
+        return tcpSocket;
+    }
     return nullptr;
 }
 
