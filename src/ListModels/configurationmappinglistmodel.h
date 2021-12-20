@@ -17,18 +17,29 @@ class ConfigurationMappingListModel : public QAbstractTableModel
 
 private:
     QSharedPointer<QList<RouteMapping*>> m_mappings { nullptr };
+    QScopedPointer<QMap<int, std::tuple<QString, QString>>> m_editing { new QMap<int, std::tuple<QString, QString>>() };
     QScopedPointer<QMap<int, int>> m_columnWidth { new QMap<int, int>() };
 
     enum CommonItemRoles {
         IdRole = Qt::UserRole + 1,
         LocalRouteRole,
-        ExternalRouteRole
+        ExternalRouteRole,
+        IsEditingRole,
+        TextValueRole
+    };
+
+    enum UserEditingColumns {
+        LocalRouteColumn = 0,
+        ExternalRouteColumn
     };
 
 public:
     explicit ConfigurationMappingListModel(QObject *parent = nullptr);
 
     void setup(QSharedPointer<QList<RouteMapping*>> mappings);
+
+    void refresh() noexcept;
+    void refreshItem(const int itemIndex) noexcept;
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -37,8 +48,12 @@ public:
 
     bool isHasMappings() const noexcept { return m_mappings != nullptr && !m_mappings->isEmpty(); }
 
+    std::tuple<QString, QString> getEditingValues(const int id);
+
     Q_INVOKABLE int getColumnWidth(const int index, const int fullWidth) const;
-    Q_INVOKABLE void deleteMapping(const int index) noexcept;
+    Q_INVOKABLE void setEditingValue(const int id, const int column, const QString& value);
+    Q_INVOKABLE void enableEditing(const int itemIndex);
+    Q_INVOKABLE void disableEditing(const int itemIndex);
 
 signals:
     void isHasMappingsChanged();

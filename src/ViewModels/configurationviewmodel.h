@@ -68,6 +68,9 @@ public:
     RouteMapping* getMappingByRoute(const QString& route);
 
     Q_INVOKABLE void openConfigFolder() const noexcept;
+    Q_INVOKABLE void editMapping(const int id) noexcept;
+    Q_INVOKABLE void addMapping(const QString& localRoute, const QString& externalRoute) noexcept;
+    Q_INVOKABLE void deleteMapping(const int index) noexcept;
 
 private:
     void readYaml(const QString& path) noexcept;
@@ -78,6 +81,7 @@ private:
     QString processExternalRoute(QString&& externalRoute) const noexcept;
     void setupRootMapping() noexcept;
     void setupYamlPath(const QString& path) noexcept;
+    bool checkDuplicateRoute(const int id, const QString route) const noexcept;
 
 signals:
     void portChanged();
@@ -86,6 +90,8 @@ signals:
     void isConfigReadedChanged();
     void isSecureChanged();
     void serverProtocolChanged();
+    void informationMessage(const QString& message);
+    void errorMessage(const QString& message, const QString title);
 
 };
 

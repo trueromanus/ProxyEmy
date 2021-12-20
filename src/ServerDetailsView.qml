@@ -166,9 +166,24 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: parent.left
                             anchors.leftMargin: column === 0 ? 10 : 0
-                            visible: column !== 2
+                            visible: column !== 2 && !isEditing
                             wrapMode: Text.NoWrap
-                            text: display
+                            text: textValue
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onPressed: {
+                                    configurationViewModel.mappingListModel.enableEditing(row);
+                                }
+                            }
+                        }
+                        TextField {
+                            visible: column !== 2 && isEditing
+                            anchors.fill: parent
+                            text: column === 0 ? localRoute : externalRoute
+                            onTextChanged: {
+                                configurationViewModel.mappingListModel.setEditingValue(identifier, column, text);
+                            }
                         }
 
                         IconButton {
@@ -178,9 +193,39 @@ Item {
                             iconWidth: 22
                             iconHeight: 22
                             anchors.centerIn: parent
-                            visible: column === 2
+                            visible: column === 2 && !isEditing
                             onPressed: {
-                                configurationViewModel.mappingListModel.deleteMapping(row);
+                                configurationViewModel.deleteMapping(row);
+                            }
+                        }
+
+                        Row {
+                            width: 64
+                            spacing: 2
+                            height: 30
+                            anchors.verticalCenter: parent.verticalCenter
+                            visible: column === 2 && isEditing
+
+                            IconButton {
+                                icon: storagePaths.icons + "save.svg"
+                                width: 30
+                                height: 30
+                                iconWidth: 22
+                                iconHeight: 22
+                                onPressed: {
+                                    configurationViewModel.editMapping(identifier);
+                                }
+                            }
+
+                            IconButton {
+                                icon: storagePaths.icons + "cancel.svg"
+                                width: 30
+                                height: 30
+                                iconWidth: 22
+                                iconHeight: 22
+                                onPressed: {
+                                    configurationViewModel.mappingListModel.disableEditing(row);
+                                }
                             }
                         }
 

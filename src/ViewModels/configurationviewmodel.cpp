@@ -68,6 +68,65 @@ void ConfigurationViewModel::openConfigFolder() const noexcept
     QDesktopServices::openUrl(QUrl(url));
 }
 
+void ConfigurationViewModel::editMapping(const int id) noexcept
+{
+    auto iterator = std::find_if(
+        m_mappings->cbegin(),
+        m_mappings->cend(),
+        [id] (const RouteMapping* routeMapping) {
+            return routeMapping->id() == id;
+        }
+    );
+    if (iterator == m_mappings->cend()) return;
+
+    auto mapping = *iterator;
+    auto values = m_configurationMappingListModel->getEditingValues(id);
+    auto localRoute = std::get<0>(values);
+    auto externalRoute = std::get<1>(values);
+
+    if (!checkDuplicateRoute(mapping->id(), localRoute)) {
+        emit errorMessage("This route already used in another mapping!", "Edit route mapping");
+        return;
+    }
+
+    mapping->setLocalRoute(localRoute);
+    mapping->setExternalRouteOriginal(externalRoute);
+    auto originalRoute = externalRoute;
+    mapping->setExternalRoute(processExternalRoute(std::move(originalRoute)));
+
+    auto index = m_mappings->indexOf(mapping);
+    m_configurationMappingListModel->disableEditing(index);
+}
+
+void ConfigurationViewModel::addMapping(const QString &localRoute, const QString &externalRoute) noexcept
+{
+    if (!checkDuplicateRoute(-1, localRoute)) {
+        emit errorMessage("This route already used in another mapping!", "Add route mapping");
+        return;
+    }
+
+    m_lastIdentifier++;
+    auto routeMapping = new RouteMapping();
+    routeMapping->setId(m_lastIdentifier);
+    routeMapping->setLocalRoute(localRoute);
+    routeMapping->setExternalRouteOriginal(externalRoute);
+    auto route = externalRoute;
+    routeMapping->setExternalRoute(processExternalRoute(std::move(route)));
+
+    m_mappings->append(routeMapping);
+
+    m_configurationMappingListModel->refresh();
+}
+
+void ConfigurationViewModel::deleteMapping(const int index) noexcept
+{
+    if (index >= m_mappings->count()) return;
+
+    m_mappings->removeAt(index);
+
+    m_configurationMappingListModel->refresh();
+}
+
 void ConfigurationViewModel::readYaml(const QString &path) noexcept
 {
     if (!QFile::exists(path)) {
@@ -185,7 +244,7 @@ bool ConfigurationViewModel::readMappings(const YAML::Node &node) noexcept
     return !m_mappings->isEmpty();
 }
 
-QString ConfigurationViewModel::processExternalRoute(QString&& externalRoute) const noexcept
+QString ConfigurationViewModel::processExternalRoute(QString &&externalRoute) const noexcept
 {
     QRegularExpression regexp("\\{[a-zA-Z0-9\\_\\-]{0,}\\}");
     auto iterator = regexp.globalMatch(externalRoute);
@@ -222,4 +281,16 @@ void ConfigurationViewModel::setupYamlPath(const QString& path) noexcept
     m_isConfigReaded = true;
     auto currentDir = QDir::current();
     m_pathToYaml = currentDir.absoluteFilePath(path);
+}
+
+bool ConfigurationViewModel::checkDuplicateRoute(const int id, const QString route) const noexcept
+{
+    auto iterator = std::find_if(
+        m_mappings->cbegin(),
+        m_mappings->cend(),
+        [id, route] (const RouteMapping* mapping) {
+            return mapping->id() != id && mapping->localRoute() == route;
+        }
+    );
+    return iterator == m_mappings->end();
 }

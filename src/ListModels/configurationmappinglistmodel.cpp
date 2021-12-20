@@ -15,6 +15,20 @@ void ConfigurationMappingListModel::setup(QSharedPointer<QList<RouteMapping*>> m
     emit isHasMappingsChanged();
 }
 
+void ConfigurationMappingListModel::refresh() noexcept
+{
+    beginResetModel();
+    //TODO: add filtering
+    endResetModel();
+
+    emit isHasMappingsChanged();
+}
+
+void ConfigurationMappingListModel::refreshItem(const int itemIndex) noexcept
+{
+    emit dataChanged(index(itemIndex, 0), index(itemIndex, 2));
+}
+
 int ConfigurationMappingListModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid()) return 0;
@@ -38,29 +52,31 @@ QVariant ConfigurationMappingListModel::data(const QModelIndex &index, int role)
     auto mapping = m_mappings->at(index.row());
     if (mapping == nullptr) return QVariant();
 
-    if (role == Qt::DisplayRole) {
-        switch (index.column()) {
-            case 0: {
-                return QVariant(mapping->localRoute());
-            }
-            case 1: {
-                return QVariant(mapping->externalRoute());
-            }
-            case 2: {
-                return QVariant("");
+    switch (role) {
+        case IdRole: {
+            return QVariant(mapping->id());
+        }
+        case TextValueRole: {
+            switch (index.column()) {
+                case 0: {
+                    return QVariant(mapping->localRoute());
+                }
+                case 1: {
+                    return QVariant(mapping->externalRoute());
+                }
+                case 2: {
+                    return QVariant("");
+                }
             }
         }
-    } else {
-        switch (role) {
-            case IdRole: {
-                return QVariant(mapping->id());
-            }
-            case LocalRouteRole: {
-                return QVariant(mapping->localRoute());
-            }
-            case ExternalRouteRole: {
-                return QVariant(mapping->externalRoute());
-            }
+        case LocalRouteRole: {
+            return QVariant(mapping->localRoute());
+        }
+        case ExternalRouteRole: {
+            return QVariant(mapping->externalRoute());
+        }
+        case IsEditingRole: {
+            return QVariant(m_editing->contains(mapping->id()));
         }
     }
 
@@ -76,7 +92,7 @@ QHash<int, QByteArray> ConfigurationMappingListModel::roleNames() const
         },
         {
             IdRole,
-            "indentifier"
+            "identifier"
         },
         {
             LocalRouteRole,
@@ -85,8 +101,23 @@ QHash<int, QByteArray> ConfigurationMappingListModel::roleNames() const
         {
             ExternalRouteRole,
             "externalRoute"
+        },
+        {
+            IsEditingRole,
+            "isEditing"
+        },
+        {
+            TextValueRole,
+            "textValue"
         }
     };
+}
+
+std::tuple<QString, QString> ConfigurationMappingListModel::getEditingValues(const int id)
+{
+    if (!m_editing->contains(id)) return std::make_tuple<QString, QString>("", "");
+
+    return m_editing->value(id);
 }
 
 int ConfigurationMappingListModel::getColumnWidth(const int index, const int fullWidth) const
@@ -97,13 +128,43 @@ int ConfigurationMappingListModel::getColumnWidth(const int index, const int ful
     return width > 0 ? width * fullWidth / 100 : 0;
 }
 
-void ConfigurationMappingListModel::deleteMapping(const int index) noexcept
+void ConfigurationMappingListModel::setEditingValue(const int id, const int column, const QString &value)
 {
-    if (index >= m_mappings->size()) return;
+    if (!m_editing->contains(id)) return;
 
-    beginResetModel();
-    m_mappings->removeAt(index);
-    endResetModel();
+    auto editingFields = m_editing->value(id);
+    switch (column) {
+        case LocalRouteColumn:
+            std::get<LocalRouteColumn>(editingFields) = value;
+            break;
+        case ExternalRouteColumn:
+            std::get<ExternalRouteColumn>(editingFields) = value;
+            break;
+        default: return;
+    }
+    (*m_editing)[id] = editingFields;
+}
 
-    emit isHasMappingsChanged();
+void ConfigurationMappingListModel::enableEditing(const int itemIndex)
+{
+    if (itemIndex >= m_mappings->size()) return;
+
+    auto mapping = m_mappings->at(itemIndex);
+    if (m_editing->contains(mapping->id())) return;
+
+    auto tuple = std::make_tuple<QString, QString>(mapping->localRoute(), mapping->externalRouteOriginal());
+    m_editing->insert(mapping->id(), tuple);
+
+    emit dataChanged(index(itemIndex, 0), index(itemIndex, 2));
+}
+
+void ConfigurationMappingListModel::disableEditing(const int itemIndex)
+{
+    if (itemIndex >= m_mappings->size()) return;
+
+    auto mapping = m_mappings->at(itemIndex);
+    if (!m_editing->contains(mapping->id())) return;
+
+    m_editing->remove(mapping->id());
+    emit dataChanged(index(itemIndex, 0), index(itemIndex, 2));
 }
