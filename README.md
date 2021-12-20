@@ -1,3 +1,3 @@
 # ProxyEmy
 
-Simple and fast local proxy server focused as tool for development.
+Simple and fast local reverse proxy server focused as tool for development.
