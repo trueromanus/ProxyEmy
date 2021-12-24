@@ -26,6 +26,7 @@
 #include <QSharedPointer>
 #include <QList>
 #include "../ListModels/configurationmappinglistmodel.h"
+#include "../ListModels/configurationaliaseslistmodel.h"
 #include <yaml-cpp/yaml.h>
 #include "../Models/routemapping.h"
 
@@ -34,6 +35,7 @@ class ConfigurationViewModel : public QObject
     Q_OBJECT
     Q_PROPERTY(int port READ port NOTIFY portChanged)
     Q_PROPERTY(ConfigurationMappingListModel* mappingListModel READ mappingListModel NOTIFY mappingListModelChanged)
+    Q_PROPERTY(ConfigurationAliasesListModel* aliasesListModel READ aliasesListModel NOTIFY aliasesListModelChanged)
     Q_PROPERTY(QString pathToYaml READ pathToYaml NOTIFY pathToYamlChanged)
     Q_PROPERTY(bool isConfigReaded READ isConfigReaded NOTIFY isConfigReadedChanged)
     Q_PROPERTY(bool isSecure READ isSecure NOTIFY isSecureChanged)
@@ -43,10 +45,11 @@ private:
     int m_port { 8080 };
     bool m_isSecure { false };
     const QString m_folderYamlPath { "proxyemy.yml" };
-    QScopedPointer<QMap<QString, QString>> m_addresses { new QMap<QString, QString>() };
+    QScopedPointer<QMap<QString, QString>> m_aliases { new QMap<QString, QString>() };
     QSharedPointer<QList<RouteMapping*>> m_mappings { new QList<RouteMapping*>() };
     RouteMapping* m_rootMapping { nullptr };
     QScopedPointer<ConfigurationMappingListModel> m_configurationMappingListModel { new ConfigurationMappingListModel() };
+    QScopedPointer<ConfigurationAliasesListModel> m_aliasesListModel { new ConfigurationAliasesListModel()};
     QString m_pathToYaml { "" };
     bool m_isConfigReaded { false };
     int m_lastIdentifier { -1 };
@@ -56,6 +59,7 @@ public:
 
     int port() const noexcept { return m_port; }
     ConfigurationMappingListModel* mappingListModel() const noexcept { return m_configurationMappingListModel.get(); }
+    ConfigurationAliasesListModel* aliasesListModel() const noexcept { return m_aliasesListModel.get(); }
 
     QString pathToYaml() const noexcept { return m_pathToYaml; }
 
@@ -71,6 +75,9 @@ public:
     Q_INVOKABLE void editMapping(const int id) noexcept;
     Q_INVOKABLE void addMapping(const QString& localRoute, const QString& externalRoute) noexcept;
     Q_INVOKABLE void deleteMapping(const int index) noexcept;
+    Q_INVOKABLE void editAlias(const QString& key) noexcept;
+    Q_INVOKABLE void addAlias(const QString& alias, const QString& value) noexcept;
+    Q_INVOKABLE void deleteAlias(const QString& key) noexcept;
 
 private:
     void readYaml(const QString& path) noexcept;
@@ -92,6 +99,7 @@ signals:
     void serverProtocolChanged();
     void informationMessage(const QString& message);
     void errorMessage(const QString& message, const QString title);
+    void aliasesListModelChanged();
 
 };
 

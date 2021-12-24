@@ -28,6 +28,7 @@ set(PROJECT_SOURCES
         ViewModels/configurationviewmodel.cpp ViewModels/configurationviewmodel.h
         Networking/httpproxyserver.cpp Networking/httpproxyserver.h
         ListModels/configurationmappinglistmodel.h ListModels/configurationmappinglistmodel.cpp
+        ListModels/configurationaliaseslistmodel.h ListModels/configurationaliaseslistmodel.cpp
         proxyemybackend.cpp proxyemybackend.h
         Models/routemapping.h Models/routemapping.cpp
         qml.qrc

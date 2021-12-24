@@ -127,6 +127,45 @@ void ConfigurationViewModel::deleteMapping(const int index) noexcept
     m_configurationMappingListModel->refresh();
 }
 
+void ConfigurationViewModel::editAlias(const QString &key) noexcept
+{
+    auto values = m_aliasesListModel->getEditingValues(key);
+    auto alias = std::get<0>(values);
+    auto aliasValue = std::get<1>(values);
+
+    if (alias != key && m_aliases->contains(alias)) {
+        emit errorMessage("This alias with new name already created!", "Edit alias");
+        return;
+    }
+
+    if (alias != key) {
+
+    } else {
+        (*m_aliases)[key] = aliasValue;
+    }
+
+    m_aliasesListModel->disableEditing(key);
+}
+
+void ConfigurationViewModel::addAlias(const QString &alias, const QString &value) noexcept
+{
+    if (m_aliases->contains(alias)) {
+        emit errorMessage("This alias already created!", "Add alias");
+        return;
+    }
+
+    m_aliases->insert(alias, value);
+    m_aliasesListModel->refresh();
+}
+
+void ConfigurationViewModel::deleteAlias(const QString &key) noexcept
+{
+    if (!m_aliases->contains(key)) return;
+
+    m_aliases->remove(key);
+    m_aliasesListModel->refresh();
+}
+
 void ConfigurationViewModel::readYaml(const QString &path) noexcept
 {
     if (!QFile::exists(path)) {
@@ -141,6 +180,7 @@ void ConfigurationViewModel::readYaml(const QString &path) noexcept
     }
 
     auto content = configurationFile.readAll();
+    configurationFile.close();
     try {
         auto yamlRoot = YAML::Load(content.toStdString());
 
@@ -199,11 +239,11 @@ bool ConfigurationViewModel::readAddresses(const YAML::Node &node) noexcept
         auto parts = addressString.split(" ");
         if (parts.length() != 2) continue;
 
-        m_addresses->insert(parts.first(), parts.last());
+        m_aliases->insert(parts.first(), parts.last());
         ++it;
     }
 
-    return !m_addresses->isEmpty();
+    return !m_aliases->isEmpty();
 }
 
 bool ConfigurationViewModel::readMappings(const YAML::Node &node) noexcept
@@ -253,8 +293,8 @@ QString ConfigurationViewModel::processExternalRoute(QString &&externalRoute) co
         QString word = match.captured(0);
         auto address = "" + word;
         address.replace("{", "").replace("}", "");
-        if (m_addresses->contains(address)) {
-            externalRoute.replace(word, m_addresses->value(address));
+        if (m_aliases->contains(address)) {
+            externalRoute.replace(word, m_aliases->value(address));
         }
     }
     QString result = std::move(externalRoute);
