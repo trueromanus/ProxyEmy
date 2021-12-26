@@ -89,6 +89,7 @@ private:
     void setupRootMapping() noexcept;
     void setupYamlPath(const QString& path) noexcept;
     bool checkDuplicateRoute(const int id, const QString route) const noexcept;
+    void refreshAllAfterAlias() noexcept;
 
 signals:
     void portChanged();

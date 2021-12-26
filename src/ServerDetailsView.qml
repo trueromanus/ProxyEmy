@@ -20,6 +20,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import "Views/Controls"
+import "Views"
 
 Item {
     id: root
@@ -133,6 +134,10 @@ Item {
 
                         }
                     }
+                }
+
+                VerticalBorder {
+                    anchors.bottom: aliasesHeaderPanel.bottom
                 }
 
                 TableView {

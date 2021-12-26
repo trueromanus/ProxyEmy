@@ -146,6 +146,7 @@ void ConfigurationViewModel::editAlias(const QString &key) noexcept
     }
 
     m_aliasesListModel->disableEditing(key);
+    refreshAllAfterAlias();
 }
 
 void ConfigurationViewModel::addAlias(const QString &alias, const QString &value) noexcept
@@ -157,6 +158,7 @@ void ConfigurationViewModel::addAlias(const QString &alias, const QString &value
 
     m_aliases->insert(alias, value);
     m_aliasesListModel->refresh();
+    refreshAllAfterAlias();
 }
 
 void ConfigurationViewModel::deleteAlias(const QString &key) noexcept
@@ -165,6 +167,7 @@ void ConfigurationViewModel::deleteAlias(const QString &key) noexcept
 
     m_aliases->remove(key);
     m_aliasesListModel->refresh();
+    refreshAllAfterAlias();
 }
 
 void ConfigurationViewModel::readYaml(const QString &path) noexcept
@@ -334,4 +337,12 @@ bool ConfigurationViewModel::checkDuplicateRoute(const int id, const QString rou
         }
     );
     return iterator == m_mappings->end();
+}
+
+void ConfigurationViewModel::refreshAllAfterAlias() noexcept
+{
+    foreach (auto mapping, *m_mappings) {
+        auto externalRoute = mapping->externalRoute();
+        mapping->setExternalRoute(processExternalRoute(std::move(externalRoute)));
+    }
 }

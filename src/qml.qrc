@@ -10,5 +10,6 @@
         <file>Views/Icons/emptybox.svg</file>
         <file>Views/Icons/save.svg</file>
         <file>Views/Icons/cancel.svg</file>
+        <file>Views/VerticalBorder.qml</file>
     </qresource>
 </RCC>
