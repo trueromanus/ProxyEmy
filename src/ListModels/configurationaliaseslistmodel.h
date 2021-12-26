@@ -34,7 +34,7 @@ public:
 
     void setup(QSharedPointer<QMap<QString, QString>> aliases);
 
-    bool isHasAliases() const noexcept { return m_aliases->isEmpty(); }
+    bool isHasAliases() const noexcept { return !m_aliases->isEmpty(); }
 
     void refresh() noexcept;
     void refreshItem(const int itemIndex) noexcept;

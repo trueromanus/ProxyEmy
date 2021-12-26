@@ -37,11 +37,14 @@ Item {
                 anchors.margins: 2
 
                 Column {
-                    anchors.fill: parent
+                    id: serverInfoPanel
+                    anchors.left: parent.left
                     anchors.leftMargin: 10
+                    anchors.right: parent.right
                     anchors.rightMargin: 10
+                    anchors.top: parent.top
                     anchors.topMargin: 4
-                    anchors.bottomMargin: 4
+                    height: parent.height / 2 - aliasesHeaderPanel.height
                     spacing: 2
 
                     Item {
@@ -105,6 +108,131 @@ Item {
                             Qt.openUrlExternally(link);
                         }
                     }
+                }
+
+                Item {
+                    id: aliasesHeaderPanel
+                    width: parent.width
+                    height: 40
+                    anchors.top: serverInfoPanel.bottom
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        anchors.leftMargin: 8
+                        text: "Aliases:"
+                        font.pointSize: 11
+                    }
+
+                    TextButton {
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        anchors.rightMargin: 8
+                        title: "Add"
+                        onPressed: {
+
+                        }
+                    }
+                }
+
+                TableView {
+                    id: aliasesTable
+                    visible: configurationViewModel.aliasesListModel.isHasAliases
+                    clip: true
+                    anchors.top: aliasesHeaderPanel.bottom
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    columnSpacing: 0
+                    rowSpacing: 1
+                    model: configurationViewModel.aliasesListModel
+                    syncDirection: Qt.Vertical
+                    ScrollBar.vertical: ScrollBar{
+                        active: true
+                    }
+                    columnWidthProvider: function (column) {
+                        return configurationViewModel.aliasesListModel.getColumnWidth(column, aliasesTable.width);
+                    }
+                    delegate: Rectangle {
+                        implicitWidth: 20
+                        implicitHeight: 30
+                        color: "transparent"
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            anchors.leftMargin: column === 0 ? 10 : 0
+                            visible: column !== 2 && !isEditing
+                            wrapMode: Text.NoWrap
+                            text: textValue
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onPressed: {
+                                    configurationViewModel.aliasesListModel.enableEditing(aliasKey);
+                                }
+                            }
+                        }
+                        TextField {
+                            visible: column !== 2 && isEditing
+                            anchors.fill: parent
+                            text: column === 0 ? aliasKey : aliasValue
+                            onTextChanged: {
+                                configurationViewModel.aliasesListModel.setEditingValue(aliasKey, column, text);
+                            }
+                        }
+
+                        IconButton {
+                            icon: storagePaths.icons + "delete.svg"
+                            width: 30
+                            height: 30
+                            iconWidth: 22
+                            iconHeight: 22
+                            anchors.centerIn: parent
+                            visible: column === 2 && !isEditing
+                            onPressed: {
+                                configurationViewModel.deleteAlias(aliasKey);
+                            }
+                        }
+
+                        Row {
+                            width: 64
+                            spacing: 2
+                            height: 30
+                            anchors.verticalCenter: parent.verticalCenter
+                            visible: column === 2 && isEditing
+
+                            IconButton {
+                                icon: storagePaths.icons + "save.svg"
+                                width: 30
+                                height: 30
+                                iconWidth: 22
+                                iconHeight: 22
+                                onPressed: {
+                                    configurationViewModel.editAlias(aliasKey);
+                                }
+                            }
+
+                            IconButton {
+                                icon: storagePaths.icons + "cancel.svg"
+                                width: 30
+                                height: 30
+                                iconWidth: 22
+                                iconHeight: 22
+                                onPressed: {
+                                    configurationViewModel.aliasesListModel.disableEditing(aliasKey);
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            anchors.bottom: parent.bottom
+                            color: "#e7eaec"
+                            width: parent.width
+                            height: 1
+                        }
+                    }
+                    onWidthChanged: aliasesTable.forceLayout()
                 }
             }
         }

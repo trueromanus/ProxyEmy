@@ -41,6 +41,7 @@ ConfigurationViewModel::ConfigurationViewModel(QObject *parent) : QObject(parent
 
     setupRootMapping();
     m_configurationMappingListModel->setup(m_mappings);
+    m_aliasesListModel->setup(m_aliases);
 }
 
 RouteMapping *ConfigurationViewModel::getMappingByRoute(const QString &route)

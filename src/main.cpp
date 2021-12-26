@@ -26,6 +26,7 @@
 #include "proxyemybackend.h"
 #include "Networking/httpproxyserver.h"
 #include "ViewModels/configurationviewmodel.h"
+#include "ListModels/configurationaliaseslistmodel.h"
 
 QScopedPointer<QFile> LoggerFile;
 
@@ -69,6 +70,7 @@ void registerQmlTypes() {
     qmlRegisterType<HttpProxyServer>("ProxyEmy.Backend", 1, 0, "HttpProxyServer");
     qmlRegisterType<ConfigurationViewModel>("ProxyEmy.Backend", 1, 0, "ConfigurationViewModel");
     qmlRegisterType<ConfigurationMappingListModel>("ProxyEmy.Backend", 1, 0, "ConfigurationMappingListModel");
+    qmlRegisterType<ConfigurationAliasesListModel>("ProxyEmy.Backend", 1, 0, "ConfigurationAliasesListModel");
 }
 
 void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)

@@ -3,14 +3,16 @@
 ConfigurationAliasesListModel::ConfigurationAliasesListModel(QObject *parent)
     : QAbstractTableModel{parent}
 {
-    m_columnWidth->insert(0, 50);
-    m_columnWidth->insert(1, 50);
+    m_columnWidth->insert(0, 40);
+    m_columnWidth->insert(1, 40);
+    m_columnWidth->insert(2, 20);
 }
 
 void ConfigurationAliasesListModel::setup(QSharedPointer<QMap<QString, QString> > aliases)
 {
     m_aliases = aliases;
     m_innerAliases = aliases->keys();
+    emit isHasAliasesChanged();
 }
 
 void ConfigurationAliasesListModel::refresh() noexcept
@@ -40,7 +42,7 @@ int ConfigurationAliasesListModel::columnCount(const QModelIndex &parent) const
 {
      if (parent.isValid()) return 0;
 
-    return 2;
+    return 3;
 }
 
 QVariant ConfigurationAliasesListModel::data(const QModelIndex &index, int role) const
@@ -80,8 +82,12 @@ QHash<int, QByteArray> ConfigurationAliasesListModel::roleNames() const
 {
     return {
         {
+            Qt::DisplayRole,
+            "display"
+        },
+        {
             AliasRole,
-            "alias"
+            "aliasKey"
         },
         {
             AliasValueRole,
@@ -133,6 +139,7 @@ void ConfigurationAliasesListModel::setEditingValue(const QString& key, const in
 void ConfigurationAliasesListModel::enableEditing(const QString &key)
 {
     if (m_editing->contains(key)) return;
+
     auto aliasKey = key;
     auto tuple = std::make_tuple<QString, QString>(std::move(aliasKey), m_aliases->value(aliasKey));
     m_editing->insert(key, tuple);

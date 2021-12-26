@@ -45,11 +45,11 @@ private:
     int m_port { 8080 };
     bool m_isSecure { false };
     const QString m_folderYamlPath { "proxyemy.yml" };
-    QScopedPointer<QMap<QString, QString>> m_aliases { new QMap<QString, QString>() };
+    QSharedPointer<QMap<QString, QString>> m_aliases { new QMap<QString, QString>() };
     QSharedPointer<QList<RouteMapping*>> m_mappings { new QList<RouteMapping*>() };
     RouteMapping* m_rootMapping { nullptr };
-    QScopedPointer<ConfigurationMappingListModel> m_configurationMappingListModel { new ConfigurationMappingListModel() };
-    QScopedPointer<ConfigurationAliasesListModel> m_aliasesListModel { new ConfigurationAliasesListModel()};
+    QScopedPointer<ConfigurationMappingListModel> m_configurationMappingListModel { new ConfigurationMappingListModel(this) };
+    QScopedPointer<ConfigurationAliasesListModel> m_aliasesListModel { new ConfigurationAliasesListModel(this)};
     QString m_pathToYaml { "" };
     bool m_isConfigReaded { false };
     int m_lastIdentifier { -1 };
