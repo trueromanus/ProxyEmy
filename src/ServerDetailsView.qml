@@ -19,6 +19,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import QtQuick.Dialogs
 import "Views/Controls"
 import "Views"
 
@@ -107,6 +108,18 @@ Item {
                         text: "Open in browser <a href='" + configurationViewModel.serverProtocol + "://localhost:" + configurationViewModel.port + "'>" + configurationViewModel.serverProtocol + "://localhost:" + configurationViewModel.port + "/</a>"
                         onLinkActivated: function(link) {
                             Qt.openUrlExternally(link);
+                        }
+                    }
+
+                    LinkedText {
+                        visible: configurationViewModel.isHasChanges
+                        text: "Configuration changed!<br>You can save changes to <a href='opened'>opened file</a> or <a href='new'>new file</a>"
+                        onLinkActivated: function (link){
+                            if (link === `new`) {
+                                saveConfigurationDialog.open();
+                                return;
+                            }
+                            configurationViewModel.saveConfiguration(true, "");
                         }
                     }
                 }
@@ -388,5 +401,17 @@ Item {
                 }
             }
         }
+    }
+
+    FileDialog {
+        id: saveConfigurationDialog
+        modality: Qt.WindowModal
+        title: `Open Yaml confguration file`
+        fileMode: FileDialog.SaveFile
+        nameFilters: [ `Yaml files (*.yml)` ]
+        onAccepted: {
+            configurationViewModel.saveConfiguration(false, selectedFile);
+        }
+        onRejected: { console.log("Rejected") }
     }
 }

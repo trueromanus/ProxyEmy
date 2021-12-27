@@ -24,6 +24,7 @@
 #include <QRegularExpression>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QMapIterator>
 
 ConfigurationViewModel::ConfigurationViewModel(QObject *parent) : QObject(parent)
 {
@@ -57,6 +58,18 @@ RouteMapping *ConfigurationViewModel::getMappingByRoute(const QString &route)
     if (iterator == m_mappings->cend()) return m_rootMapping == nullptr ? nullptr : m_rootMapping;
 
     return *iterator;
+}
+
+void ConfigurationViewModel::markChanges() noexcept
+{
+    m_isHasChanges = true;
+    emit isHasChangesChanged();
+}
+
+void ConfigurationViewModel::unmarkChanges() noexcept
+{
+    m_isHasChanges = false;
+    emit isHasChangesChanged();
 }
 
 void ConfigurationViewModel::openConfigFolder() const noexcept
@@ -97,6 +110,7 @@ void ConfigurationViewModel::editMapping(const int id) noexcept
 
     auto index = m_mappings->indexOf(mapping);
     m_configurationMappingListModel->disableEditing(index);
+    markChanges();
 }
 
 void ConfigurationViewModel::addMapping(const QString &localRoute, const QString &externalRoute) noexcept
@@ -117,6 +131,7 @@ void ConfigurationViewModel::addMapping(const QString &localRoute, const QString
     m_mappings->append(routeMapping);
 
     m_configurationMappingListModel->refresh();
+    markChanges();
 }
 
 void ConfigurationViewModel::deleteMapping(const int index) noexcept
@@ -126,6 +141,7 @@ void ConfigurationViewModel::deleteMapping(const int index) noexcept
     m_mappings->removeAt(index);
 
     m_configurationMappingListModel->refresh();
+    markChanges();
 }
 
 void ConfigurationViewModel::editAlias(const QString &key) noexcept
@@ -147,6 +163,7 @@ void ConfigurationViewModel::editAlias(const QString &key) noexcept
 
     m_aliasesListModel->disableEditing(key);
     refreshAllAfterAlias();
+    markChanges();
 }
 
 void ConfigurationViewModel::addAlias(const QString &alias, const QString &value) noexcept
@@ -159,6 +176,7 @@ void ConfigurationViewModel::addAlias(const QString &alias, const QString &value
     m_aliases->insert(alias, value);
     m_aliasesListModel->refresh();
     refreshAllAfterAlias();
+    markChanges();
 }
 
 void ConfigurationViewModel::deleteAlias(const QString &key) noexcept
@@ -168,6 +186,54 @@ void ConfigurationViewModel::deleteAlias(const QString &key) noexcept
     m_aliases->remove(key);
     m_aliasesListModel->refresh();
     refreshAllAfterAlias();
+    markChanges();
+}
+
+void ConfigurationViewModel::saveConfiguration(const bool saveOpened, const QString& path) noexcept
+{
+    auto savedPath = saveOpened ? m_pathToYaml : path;
+
+    YAML::Emitter out;
+    out << YAML::BeginMap;
+    out << YAML::Key << "port";
+    out << YAML::Value << m_port;
+    out << YAML::Key << "secure";
+    out << YAML::Value << m_isSecure;
+
+    out << YAML::Key << "aliases";
+    out << YAML::Value << YAML::BeginSeq;
+    QMapIterator aliasesIterator(*m_aliases);
+    while(aliasesIterator.hasNext()) {
+        aliasesIterator.next();
+        out << (aliasesIterator.key() + " " + aliasesIterator.value()).toStdString();
+    }
+    out << YAML::EndSeq;
+
+    out << YAML::Key << "mappings";
+    out << YAML::Value << YAML::BeginSeq;
+    foreach (auto mapping, *m_mappings) {
+        out << (mapping->localRoute() + " " + mapping->externalRouteOriginal()).toStdString();
+    }
+    out << YAML::EndSeq;
+
+    out << YAML::EndMap;
+
+#ifdef Q_OS_WIN
+    auto configurationFilePath = savedPath.replace("file:///", "");
+#else
+    auto configurationFilePath = savedPath.replace("file://", "");
+#endif
+
+    QFile configurationFile(configurationFilePath);
+    if (!configurationFile.open(QIODevice::WriteOnly)) {
+        auto error = configurationFile.errorString();
+        qInfo() << "Can't write YAML file by path: " << configurationFilePath << "\n" << error;
+        return;
+    }
+    configurationFile.write(out.c_str());
+    configurationFile.close();
+
+    unmarkChanges();
 }
 
 void ConfigurationViewModel::readYaml(const QString &path) noexcept

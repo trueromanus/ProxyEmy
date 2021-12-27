@@ -40,6 +40,7 @@ class ConfigurationViewModel : public QObject
     Q_PROPERTY(bool isConfigReaded READ isConfigReaded NOTIFY isConfigReadedChanged)
     Q_PROPERTY(bool isSecure READ isSecure NOTIFY isSecureChanged)
     Q_PROPERTY(QString serverProtocol READ serverProtocol NOTIFY serverProtocolChanged)
+    Q_PROPERTY(bool isHasChanges READ isHasChanges NOTIFY isHasChangesChanged)
 
 private:
     int m_port { 8080 };
@@ -53,6 +54,7 @@ private:
     QString m_pathToYaml { "" };
     bool m_isConfigReaded { false };
     int m_lastIdentifier { -1 };
+    bool m_isHasChanges { false };
 
 public:
     explicit ConfigurationViewModel(QObject *parent = nullptr);
@@ -71,6 +73,10 @@ public:
 
     RouteMapping* getMappingByRoute(const QString& route);
 
+    bool isHasChanges() const noexcept { return m_isHasChanges; }
+    void markChanges() noexcept;
+    void unmarkChanges() noexcept;
+
     Q_INVOKABLE void openConfigFolder() const noexcept;
     Q_INVOKABLE void editMapping(const int id) noexcept;
     Q_INVOKABLE void addMapping(const QString& localRoute, const QString& externalRoute) noexcept;
@@ -78,6 +84,7 @@ public:
     Q_INVOKABLE void editAlias(const QString& key) noexcept;
     Q_INVOKABLE void addAlias(const QString& alias, const QString& value) noexcept;
     Q_INVOKABLE void deleteAlias(const QString& key) noexcept;
+    Q_INVOKABLE void saveConfiguration(const bool saveOpened, const QString& path) noexcept;
 
 private:
     void readYaml(const QString& path) noexcept;
@@ -101,6 +108,7 @@ signals:
     void informationMessage(const QString& message);
     void errorMessage(const QString& message, const QString title);
     void aliasesListModelChanged();
+    void isHasChangesChanged();
 
 };
 
