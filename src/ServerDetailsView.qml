@@ -239,6 +239,19 @@ Item {
                     }
                     onWidthChanged: aliasesTable.forceLayout()
                 }
+
+                Item {
+                    visible: !configurationViewModel.aliasesListModel.isHasAliases
+                    anchors.top: aliasesHeaderPanel.bottom
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
+                    EmptyList {
+                        anchors.centerIn: parent
+                        title: "You did not have aliases yet.\nPlease click on Add button."
+                    }
+                }
             }
         }
 
@@ -362,37 +375,16 @@ Item {
                             }
                         }
 
-                        Rectangle {
+                        VerticalBorder {
                             anchors.bottom: parent.bottom
-                            color: "#e7eaec"
-                            width: parent.width
-                            height: 1
                         }
                     }
                     onWidthChanged: mappingsTable.forceLayout()
                 }
 
-                Item {
+                EmptyList {
                     visible: !configurationViewModel.mappingListModel.isHasMappings
-                    anchors.centerIn: parent
-                    width: parent.width
-                    height: 90
-
-                    Image {
-                        id: emptyboxImage
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        source: storagePaths.icons + "emptybox.svg"
-                        width: 50
-                        height: 50
-                        mipmap: true
-                    }
-                    Text {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.top: emptyboxImage.bottom
-                        horizontalAlignment: Text.AlignHCenter
-                        text: "You did not have mappings yet.\nPlease click on Add button."
-                        font.pointSize: 9
-                    }
+                    title: "You did not have mappings yet.\nPlease click on Add button."
                 }
             }
         }
