@@ -200,21 +200,26 @@ Item {
                             }
                         }
 
-                        IconButton {
-                            icon: storagePaths.icons + "delete.svg"
-                            width: 30
-                            height: 30
-                            iconWidth: 22
-                            iconHeight: 22
-                            anchors.centerIn: parent
+                        Item {
                             visible: column === 2 && !isEditing
-                            onPressed: {
-                                configurationViewModel.deleteAlias(aliasKey);
+                            width: parent.width - 10
+                            height: parent.height
+
+                            IconButton {
+                                icon: storagePaths.icons + "delete.svg"
+                                width: 30
+                                height: 30
+                                iconWidth: 22
+                                iconHeight: 22
+                                anchors.centerIn: parent
+                                onPressed: {
+                                    configurationViewModel.deleteAlias(aliasKey);
+                                }
                             }
                         }
 
                         Row {
-                            width: 64
+                            width: parent.width - 10
                             spacing: 2
                             height: 30
                             anchors.verticalCenter: parent.verticalCenter
@@ -222,7 +227,7 @@ Item {
 
                             IconButton {
                                 icon: storagePaths.icons + "save.svg"
-                                width: 30
+                                width: 26
                                 height: 30
                                 iconWidth: 22
                                 iconHeight: 22
@@ -233,7 +238,7 @@ Item {
 
                             IconButton {
                                 icon: storagePaths.icons + "cancel.svg"
-                                width: 30
+                                width: 26
                                 height: 30
                                 iconWidth: 22
                                 iconHeight: 22
@@ -345,21 +350,26 @@ Item {
                             }
                         }
 
-                        IconButton {
-                            icon: storagePaths.icons + "delete.svg"
-                            width: 30
-                            height: 30
-                            iconWidth: 22
-                            iconHeight: 22
-                            anchors.centerIn: parent
+                        Item {
                             visible: column === 2 && !isEditing
-                            onPressed: {
-                                configurationViewModel.deleteMapping(row);
+                            width: parent.width - 10
+                            height: parent.height
+
+                            IconButton {
+                                icon: storagePaths.icons + "delete.svg"
+                                width: 30
+                                height: 30
+                                iconWidth: 22
+                                iconHeight: 22
+                                anchors.centerIn: parent
+                                onPressed: {
+                                    configurationViewModel.deleteMapping(row);
+                                }
                             }
                         }
 
                         Row {
-                            width: 64
+                            width: parent.width - 10
                             spacing: 2
                             height: 30
                             anchors.verticalCenter: parent.verticalCenter
@@ -367,7 +377,7 @@ Item {
 
                             IconButton {
                                 icon: storagePaths.icons + "save.svg"
-                                width: 30
+                                width: 26
                                 height: 30
                                 iconWidth: 22
                                 iconHeight: 22
@@ -378,7 +388,7 @@ Item {
 
                             IconButton {
                                 icon: storagePaths.icons + "cancel.svg"
-                                width: 30
+                                width: 26
                                 height: 30
                                 iconWidth: 22
                                 iconHeight: 22
