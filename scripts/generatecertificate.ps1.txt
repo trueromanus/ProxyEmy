@@ -1,0 +1,7 @@
+$PathToOpenSSL = $args[0]
+$PathToOpenSSLBinary = $args[0] + "\Win_x64\bin\openssl.exe"
+
+$env:OPENSSL_CONF = $PathToOpenSSL + "\openssl.cnf"
+
+&$PathToOpenSSLBinary req -x509 -nodes -new -sha256 -days 1024 -newkey rsa:2048 -keyout RootCA.key -out RootCA.pem -subj "/C=US/CN=Example-Root-CA"
+&$PathToOpenSSLBinary x509 -outform pem -in RootCA.pem -out RootCA.crt
