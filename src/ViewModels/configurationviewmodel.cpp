@@ -111,6 +111,7 @@ void ConfigurationViewModel::editMapping(const int id) noexcept
     auto index = m_mappings->indexOf(mapping);
     m_configurationMappingListModel->disableEditing(index);
     markChanges();
+    setupRootMapping();
 }
 
 void ConfigurationViewModel::addMapping(const QString &localRoute, const QString &externalRoute) noexcept
@@ -132,6 +133,7 @@ void ConfigurationViewModel::addMapping(const QString &localRoute, const QString
 
     m_configurationMappingListModel->refresh();
     markChanges();
+    setupRootMapping();
 }
 
 void ConfigurationViewModel::deleteMapping(const int index) noexcept
@@ -142,6 +144,7 @@ void ConfigurationViewModel::deleteMapping(const int index) noexcept
 
     m_configurationMappingListModel->refresh();
     markChanges();
+    setupRootMapping();
 }
 
 void ConfigurationViewModel::editAlias(const QString &key) noexcept
@@ -373,6 +376,8 @@ QString ConfigurationViewModel::processExternalRoute(QString &&externalRoute) co
 
 void ConfigurationViewModel::setupRootMapping() noexcept
 {
+    m_rootMapping = nullptr;
+
     auto iterator = std::find_if(
         m_mappings->cbegin(),
         m_mappings->cend(),

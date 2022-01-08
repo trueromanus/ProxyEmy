@@ -188,8 +188,8 @@ bool HttpProxyServer::setupSslSocket(QSslSocket &socket, const int socketDescrip
 
     auto applicationPath = QCoreApplication::applicationDirPath();
 
-    socket.setLocalCertificate(applicationPath + "/certificate/server.crt", QSsl::Pem);
-    socket.setPrivateKey(applicationPath + "/certificate/server.key", QSsl::Rsa, QSsl::Pem);
+    socket.setLocalCertificate(applicationPath + "/certificate/localhost.crt", QSsl::Pem);
+    socket.setPrivateKey(applicationPath + "/certificate/localhost.key", QSsl::Rsa, QSsl::Pem);
     socket.setPeerVerifyMode(QSslSocket::VerifyNone);
     socket.setProtocol(QSsl::TlsV1_0OrLater);
     socket.startServerEncryption();
