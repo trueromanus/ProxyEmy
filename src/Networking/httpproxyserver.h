@@ -59,8 +59,8 @@ private:
     bool setupSocket(QTcpSocket& socket, const int socketDescriptor);
     bool setupSslSocket(QSslSocket& socket, const int socketDescriptor);
     QTcpSocket* createSocketFromDescription(const int socket);
-    QByteArray getRoute(QByteArray bytes);
-    QByteArray replaceHost(QByteArray bytes, RouteMapping * mapping);
+    QList<QByteArray> getRoute(QByteArray bytes);
+    QByteArray replaceHost(QByteArray bytes, RouteMapping * mapping, QList<QByteArray>& routeData);
 
 signals:
     void configurationChanged();

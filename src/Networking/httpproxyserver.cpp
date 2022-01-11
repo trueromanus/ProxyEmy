@@ -87,12 +87,13 @@ void HttpProxyServer::processSocket(int socket)
         auto bytes = tcpSocket->read(bytesCount);
 
         if (currentRoute == nullptr) {
-            auto route = getRoute(bytes);
-            if (route.isEmpty()) {
+            auto routeData = getRoute(bytes);
+            if (routeData.count() != 3) {
                 qWarning() << "Error while try read request first line from socket " << socket;
                 closeSocket(tcpSocket);
                 break;
             }
+            auto route = routeData[1];
             auto currentRoute = m_configuration->getMappingByRoute(route);
             if (currentRoute == nullptr) {
                 tcpSocket->write(m_EmptyResponse.toUtf8());
@@ -104,7 +105,7 @@ void HttpProxyServer::processSocket(int socket)
                 closeSocket(tcpSocket);
                 break;
             }
-            innerTcpSocket->write(replaceHost(bytes, currentRoute));
+            innerTcpSocket->write(replaceHost(bytes, currentRoute, routeData));
             innerTcpSocket->waitForBytesWritten(2000);
             break;
         }
@@ -213,18 +214,23 @@ QTcpSocket *HttpProxyServer::createSocketFromDescription(const int socket)
     return nullptr;
 }
 
-QByteArray HttpProxyServer::getRoute(QByteArray bytes)
+QList<QByteArray> HttpProxyServer::getRoute(QByteArray bytes)
 {
     auto index = bytes.indexOf("\r\n");
     auto routeHeader = bytes.mid(0, index);
-    auto parts = routeHeader.split(' ');
-    if (parts.count() != 3) return "";
 
-    return parts[1];
+    return routeHeader.split(' ');
 }
 
-QByteArray HttpProxyServer::replaceHost(QByteArray bytes, RouteMapping *mapping)
+QByteArray HttpProxyServer::replaceHost(QByteArray bytes, RouteMapping *mapping, QList<QByteArray>& routeData)
 {
+    auto length = routeData[0].length() + routeData[1].length() + 1;
+    auto urlPath = mapping->processExternalUrlPath();
+    if (!urlPath.isEmpty()) {
+        auto route = routeData[0] + " " + routeData.value(1).replace(0, 1, urlPath.toUtf8());
+        bytes.replace(0, length, route);
+    }
+
     auto index = bytes.indexOf("Host: ");
     if (index == -1) return bytes;
 
@@ -233,8 +239,5 @@ QByteArray HttpProxyServer::replaceHost(QByteArray bytes, RouteMapping *mapping)
     auto leftPart = bytes.mid(0, index);
     auto rightPart = bytes.mid(endIndex + 2);
     auto host = "Host: " + mapping->getExternalHost() + ":" + QString::number(mapping->getExternalPort()) + "\r\n";
-    if (leftPart.contains("site-middle.jpg")) {
-        qDebug() << rightPart;
-    }
     return leftPart + host.toUtf8() + rightPart;
 }
