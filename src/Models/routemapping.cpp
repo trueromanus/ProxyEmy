@@ -59,6 +59,11 @@ QString RouteMapping::mapLocalToExternal(const QString& currentRoute) const noex
     return path;
 }
 
+QString RouteMapping::processExternalUrlPath() const noexcept
+{
+    return m_externalRouteUrl.path();
+}
+
 bool RouteMapping::isExternalSecure() const noexcept
 {
     return m_externalRouteUrl.scheme().toLower() == m_secureScheme;

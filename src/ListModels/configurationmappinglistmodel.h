@@ -25,7 +25,8 @@ private:
         LocalRouteRole,
         ExternalRouteRole,
         IsEditingRole,
-        TextValueRole
+        TextValueRole,
+        ExternalRouteOriginRole,
     };
 
     enum UserEditingColumns {

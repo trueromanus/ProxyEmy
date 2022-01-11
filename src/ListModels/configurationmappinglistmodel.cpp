@@ -78,6 +78,9 @@ QVariant ConfigurationMappingListModel::data(const QModelIndex &index, int role)
         case IsEditingRole: {
             return QVariant(m_editing->contains(mapping->id()));
         }
+        case ExternalRouteOriginRole: {
+            return QVariant(mapping->externalRouteOriginal());
+        }
     }
 
     return QVariant();
@@ -109,6 +112,10 @@ QHash<int, QByteArray> ConfigurationMappingListModel::roleNames() const
         {
             TextValueRole,
             "textValue"
+        },
+        {
+            ExternalRouteOriginRole,
+            "externalRouteOrigin"
         }
     };
 }
@@ -151,7 +158,6 @@ void ConfigurationMappingListModel::enableEditing(const int itemIndex)
 
     auto mapping = m_mappings->at(itemIndex);
     if (m_editing->contains(mapping->id())) return;
-
     auto tuple = std::make_tuple<QString, QString>(mapping->localRoute(), mapping->externalRouteOriginal());
     m_editing->insert(mapping->id(), tuple);
 

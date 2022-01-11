@@ -344,7 +344,7 @@ Item {
                         TextField {
                             visible: column !== 2 && isEditing
                             anchors.fill: parent
-                            text: column === 0 ? localRoute : externalRoute
+                            text: column === 0 ? localRoute : externalRouteOrigin
                             onTextChanged: {
                                 configurationViewModel.mappingListModel.setEditingValue(identifier, column, text);
                             }

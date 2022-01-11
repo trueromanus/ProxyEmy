@@ -53,6 +53,7 @@ public:
     void setExternalRouteOriginal(const QString& externalRouteOriginal) noexcept;
 
     QString mapLocalToExternal(const QString& currentRoute) const noexcept;
+    QString processExternalUrlPath() const noexcept;
     bool isExternalSecure() const noexcept;
 };
 
