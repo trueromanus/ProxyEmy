@@ -181,7 +181,10 @@ Item {
                             anchors.left: parent.left
                             anchors.leftMargin: column === 0 ? 10 : 0
                             visible: column !== 2 && !isEditing
-                            wrapMode: Text.NoWrap
+                            width: parent.width - 10
+                            wrapMode: Text.WrapAnywhere
+                            elide: Qt.ElideRight
+                            maximumLineCount: 1
                             text: textValue
 
                             MouseArea {
@@ -331,7 +334,10 @@ Item {
                             anchors.left: parent.left
                             anchors.leftMargin: column === 0 ? 10 : 0
                             visible: column !== 2 && !isEditing
-                            wrapMode: Text.NoWrap
+                            width: parent.width - 10
+                            wrapMode: Text.WrapAnywhere
+                            elide: Qt.ElideRight
+                            maximumLineCount: 1
                             text: textValue
 
                             MouseArea {
