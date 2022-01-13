@@ -61,9 +61,7 @@ Item {
                                 disabled: httpProxyServer.serverStarted
                                 title: "Start"
                                 onPressed: {
-                                    //httpProxyServer.startServer();
-
-                                    notificationHub.pushMessage("Test", "Lalalallala", "error");
+                                    httpProxyServer.startServer();
                                 }
                             }
 
