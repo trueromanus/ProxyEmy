@@ -26,9 +26,11 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick LinguistTools Network W
 set(PROJECT_SOURCES
         main.cpp
         ViewModels/configurationviewmodel.cpp ViewModels/configurationviewmodel.h
+        ViewModels/notificationhubviewmodel.h ViewModels/notificationhubviewmodel.cpp
         Networking/httpproxyserver.cpp Networking/httpproxyserver.h
         ListModels/configurationmappinglistmodel.h ListModels/configurationmappinglistmodel.cpp
         ListModels/configurationaliaseslistmodel.h ListModels/configurationaliaseslistmodel.cpp
+        ListModels/notificationpoollistmodel.h ListModels/notificationpoollistmodel.cpp
         proxyemybackend.cpp proxyemybackend.h
         Models/routemapping.h Models/routemapping.cpp
         qml.qrc

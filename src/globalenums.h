@@ -1,0 +1,6 @@
+#ifndef GLOBALENUMS_H
+#define GLOBALENUMS_H
+
+
+
+#endif // GLOBALENUMS_H
