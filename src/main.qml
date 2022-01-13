@@ -42,7 +42,7 @@ ApplicationWindow {
         id: notificationPool
         anchors.right: parent.right
         anchors.top: parent.top
-        width: 200
+        width: 290
         height: 200
     }
 

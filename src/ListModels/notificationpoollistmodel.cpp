@@ -15,7 +15,7 @@ void NotificationPoolListModel::setup(QSharedPointer<QList<std::tuple<QString, Q
 
 void NotificationPoolListModel::pushMessage(const int index) noexcept
 {
-    auto expired = QDateTime::currentDateTime().addSecs(4);
+    auto expired = QDateTime::currentDateTime().addSecs(3);
     m_currentEvents->enqueue(std::make_tuple(index, expired));
     if (!m_timer->isActive()) m_timer->start();
     refresh();
@@ -38,8 +38,6 @@ int NotificationPoolListModel::rowCount(const QModelIndex &parent) const
 QVariant NotificationPoolListModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid()) return QVariant();
-
-    qDebug() << "LALALLALALA";
 
     auto currentEvent = m_currentEvents->at(index.row());
     auto indexOfItem = std::get<IndexField>(currentEvent);
@@ -88,29 +86,30 @@ QHash<int, QByteArray> NotificationPoolListModel::roleNames() const
         },
         {
             IsAnimationRole,
-            "isAnimation"
+            "isActiveAnimation"
         }
     };
 }
 
-void NotificationPoolListModel::timerTriggered()
-{
-    if (m_currentAnimating) return;
-
-    auto expired = std::get<ExpiredField>(m_currentEvents->head());
-    if (QDateTime::currentDateTime() >= expired) {
-        m_currentAnimating = true;
-        auto indexItem = std::get<IndexField>(m_currentEvents->head());
-        emit startItemAnimation(indexItem);
-        emit dataChanged(index(indexItem), index(indexItem));
-    }
-}
-
-void NotificationPoolListModel::itemAnimationEnded()
+void NotificationPoolListModel::itemAnimationEnded() noexcept
 {
     m_currentAnimating = false;
 
     beginResetModel();
     m_currentEvents->dequeue();
     endResetModel();
+
+    if (m_currentEvents->isEmpty()) m_timer->stop();
+}
+
+void NotificationPoolListModel::timerTriggered()
+{
+    if (m_currentAnimating) return;
+    if (m_currentEvents->isEmpty()) return;
+
+    auto expired = std::get<ExpiredField>(m_currentEvents->head());
+    if (QDateTime::currentDateTime() >= expired) {
+        m_currentAnimating = true;
+        emit dataChanged(index(0), index(0));
+    }
 }

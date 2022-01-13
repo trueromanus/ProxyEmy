@@ -22,6 +22,7 @@ Item {
                 }
 
                 Rectangle {
+                    anchors.top: parent.top
                     anchors.left: leftBorder.right
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
@@ -55,6 +56,16 @@ Item {
                         font.pointSize: 10
                         text: message
                         maximumLineCount: 2
+                    }
+                }
+
+                NumberAnimation on opacity {
+                    running: isActiveAnimation
+                    from: 1
+                    to: 0
+                    duration: 300
+                    onFinished: {
+                        notificationHub.pool.itemAnimationEnded();
                     }
                 }
             }
