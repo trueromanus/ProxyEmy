@@ -15,7 +15,7 @@ void NotificationPoolListModel::setup(QSharedPointer<QList<std::tuple<QString, Q
 
 void NotificationPoolListModel::pushMessage(const int index) noexcept
 {
-    auto expired = QDateTime::currentDateTime().addSecs(3);
+    auto expired = QDateTime::currentDateTime().addSecs(2);
     m_currentEvents->enqueue(std::make_tuple(index, expired));
     if (!m_timer->isActive()) m_timer->start();
     refresh();

@@ -54,6 +54,7 @@ ApplicationWindow {
         HttpProxyServer {
             id: httpProxyServer
             configuration: configurationViewModel
+            notificationhub: notificationHub
             Component.onDestruction: {
                 httpProxyServer.stopServer();
             }

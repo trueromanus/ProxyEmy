@@ -12,3 +12,13 @@ void NotificationHubViewModel::pushMessage(const QString &title, const QString &
     m_pool->pushMessage(m_messages->count() - 1);
 }
 
+void NotificationHubViewModel::pushErrorMessage(const QString &title, const QString &message)
+{
+    pushMessage(title, message, m_errorTopic);
+}
+
+void NotificationHubViewModel::pushInfoMessage(const QString &title, const QString &message)
+{
+    pushMessage(title, message, m_infoTopic);
+}
+
