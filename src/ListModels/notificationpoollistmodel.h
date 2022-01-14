@@ -7,6 +7,7 @@
 #include <QDateTime>
 #include <QTimer>
 #include <QSharedPointer>
+#include "../globalenums.h"
 
 class NotificationPoolListModel : public QAbstractListModel
 {

@@ -5,6 +5,7 @@
 #include <QList>
 #include <QSharedPointer>
 #include "../ListModels/notificationpoollistmodel.h"
+#include "../globalenums.h"
 
 class NotificationHubViewModel : public QObject
 {
@@ -15,12 +16,6 @@ private:
     QScopedPointer<NotificationPoolListModel> m_pool { new NotificationPoolListModel(this) };
     QString m_errorTopic { "error" };
     QString m_infoTopic { "info" };
-
-    enum NotificationField {
-        NotificationTitleField = 0,
-        NotificationMessageField,
-        NotificationTopicField
-    };
 
 public:
     explicit NotificationHubViewModel(QObject *parent = nullptr);

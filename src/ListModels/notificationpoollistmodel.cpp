@@ -42,14 +42,14 @@ QVariant NotificationPoolListModel::data(const QModelIndex &index, int role) con
     auto currentEvent = m_currentEvents->at(index.row());
     auto indexOfItem = std::get<IndexField>(currentEvent);
     auto item = m_messages->at(indexOfItem);
-    auto topic = std::get<2>(item);
+    auto topic = std::get<NotificationTopicField>(item);
 
     switch (role) {
         case TitleRole: {
-            return QVariant(std::get<0>(item));
+            return QVariant(std::get<NotificationTitleField>(item));
         }
         case MessageRole: {
-            return QVariant(std::get<1>(item));
+            return QVariant(std::get<NotificationMessageField>(item));
         }
         case IsErrorRole: {
             return QVariant(topic == "error");
