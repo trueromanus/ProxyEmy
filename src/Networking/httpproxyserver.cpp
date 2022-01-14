@@ -36,19 +36,32 @@ void HttpProxyServer::setConfiguration(ConfigurationViewModel *configuration) no
     emit configurationChanged();
 }
 
+void HttpProxyServer::setNotificationhub(const NotificationHubViewModel *notificationhub) noexcept
+{
+    if (m_notificationHub != nullptr) return; // can set notification hub only one time
+    if (m_notificationHub == notificationhub) return;
+
+    m_notificationHub = const_cast<NotificationHubViewModel*>(notificationhub);
+}
+
 void HttpProxyServer::startServer()
 {
     if (m_configuration->port() <= 0) {
-        qInfo() << "Port not specified";
+        qInfo() << m_portNotSpecifiedMessage;
+        m_notificationHub->pushErrorMessage(m_mainMessageTitle, m_portNotSpecifiedMessage);
         return;
     }
     auto port = m_configuration->port();
     if (!listen(QHostAddress::Any, port)) {
-        qInfo() << "Error while trying start listening on port " << port;
+        auto message = m_errorWhileStartListening + QString::number(port);
+        qInfo() << message;
+        m_notificationHub->pushErrorMessage(m_mainMessageTitle, message);
         return;
     }
 
-    qInfo() << "Server started listening on port " << port;
+    auto listeningMessage = m_serverStartListening + QString::number(port);
+    qInfo() << listeningMessage;
+    m_notificationHub->pushInfoMessage(m_mainMessageTitle, listeningMessage);
     emit serverStartedChanged();
 }
 

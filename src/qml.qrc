@@ -12,5 +12,9 @@
         <file>Views/Icons/cancel.svg</file>
         <file>Views/VerticalBorder.qml</file>
         <file>Views/EmptyList.qml</file>
+        <file>Views/NotificationPoolList.qml</file>
+        <file>Views/Icons/error.svg</file>
+        <file>Views/Icons/info.svg</file>
+        <file>Views/Icons/warn.svg</file>
     </qresource>
 </RCC>

@@ -20,6 +20,7 @@ import QtQuick
 import QtQuick.Window
 import QtQuick.Controls
 import ProxyEmy.Backend
+import "Views"
 
 ApplicationWindow {
     minimumWidth: 510
@@ -37,24 +38,40 @@ ApplicationWindow {
         anchors.fill: parent
     }
 
-    ProxyEmyBackend {
-        id: backend
-    }
-
-    HttpProxyServer {
-        id: httpProxyServer
-        configuration: configurationViewModel
-        Component.onDestruction: {
-            httpProxyServer.stopServer();
-        }
-    }
-
-    ConfigurationViewModel {
-        id: configurationViewModel
+    NotificationPoolList {
+        id: notificationPool
+        anchors.right: parent.right
+        anchors.top: parent.top
+        width: 290
+        height: 200
     }
 
     Item {
-        id: storagePaths
-        property string icons: Qt.resolvedUrl("../Views/Icons/")
+        ProxyEmyBackend {
+            id: backend
+        }
+
+        HttpProxyServer {
+            id: httpProxyServer
+            configuration: configurationViewModel
+            notificationhub: notificationHub
+            Component.onDestruction: {
+                httpProxyServer.stopServer();
+            }
+        }
+
+        ConfigurationViewModel {
+            id: configurationViewModel
+        }
+
+        NotificationHubViewModel {
+            id: notificationHub
+        }
+
+        Item {
+            id: storagePaths
+            property string icons: Qt.resolvedUrl("../Views/Icons/")
+        }
+
     }
 }

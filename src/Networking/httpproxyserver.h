@@ -26,16 +26,24 @@
 #include <QSslSocket>
 #include <QList>
 #include "../ViewModels/configurationviewmodel.h"
+#include "../ViewModels/notificationhubviewmodel.h"
 
 class HttpProxyServer : public QTcpServer
 {
     Q_OBJECT
     Q_PROPERTY(ConfigurationViewModel* configuration READ configuration WRITE setConfiguration NOTIFY configurationChanged)
     Q_PROPERTY(bool serverStarted READ serverStarted NOTIFY serverStartedChanged)
+    Q_PROPERTY(NotificationHubViewModel* notificationhub READ notificationhub WRITE setNotificationhub NOTIFY notificationhubChanged)
 
 private:
     const QString m_EmptyResponse = "HTTP/1.1 404 Not Found\r\nServer: ProxyEmy\r\nContent-Type: text/plain\r\nContent-Length: 20\r\nConnection: close\r\n\r\n<b>404 Not Found</b>";
     ConfigurationViewModel* m_configuration { nullptr };
+    NotificationHubViewModel* m_notificationHub { nullptr };
+
+    QString m_mainMessageTitle { "HTTP server" };
+    QString m_portNotSpecifiedMessage { "Port not specified" };
+    QString m_errorWhileStartListening { "Error while trying start listening on port " };
+    QString m_serverStartListening { "Server started listening on port " };
 
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
@@ -45,6 +53,9 @@ public:
 
     ConfigurationViewModel* configuration() const noexcept { return m_configuration; }
     void setConfiguration(ConfigurationViewModel* configuration) noexcept;
+
+    NotificationHubViewModel* notificationhub() const noexcept { return m_notificationHub; }
+    void setNotificationhub(const NotificationHubViewModel* notificationhub) noexcept;
 
     bool serverStarted() const noexcept { return isListening(); }
 
@@ -65,6 +76,7 @@ private:
 signals:
     void configurationChanged();
     void serverStartedChanged();
+    void notificationhubChanged();
 
 };
 
