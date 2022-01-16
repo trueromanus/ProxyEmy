@@ -41,6 +41,7 @@ class ConfigurationViewModel : public QObject
     Q_PROPERTY(bool isSecure READ isSecure NOTIFY isSecureChanged)
     Q_PROPERTY(QString serverProtocol READ serverProtocol NOTIFY serverProtocolChanged)
     Q_PROPERTY(bool isHasChanges READ isHasChanges NOTIFY isHasChangesChanged)
+    Q_PROPERTY(bool isLogRequests READ isLogRequests NOTIFY isLogRequestsChanged)
 
 private:
     int m_port { 8080 };
@@ -55,6 +56,7 @@ private:
     bool m_isConfigReaded { false };
     int m_lastIdentifier { -1 };
     bool m_isHasChanges { false };
+    bool m_isLogRequests { false };
 
 public:
     explicit ConfigurationViewModel(QObject *parent = nullptr);
@@ -68,6 +70,8 @@ public:
     bool isConfigReaded() const noexcept { return m_isConfigReaded; }
 
     bool isSecure() const noexcept { return m_isSecure; }
+
+    bool isLogRequests() const noexcept { return m_isLogRequests; }
 
     QString serverProtocol() const noexcept { return m_isSecure ? "https" : "http"; }
 
@@ -109,6 +113,7 @@ signals:
     void errorMessage(const QString& message, const QString title);
     void aliasesListModelChanged();
     void isHasChangesChanged();
+    void isLogRequestsChanged();
 
 };
 
