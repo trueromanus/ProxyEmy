@@ -32,6 +32,8 @@ ApplicationWindow {
         anchors.fill: parent
         color: "white"
     }
+    header: ApplicationHeader {
+    }
 
     ServerDetailsView {
         id: serverDetailsView

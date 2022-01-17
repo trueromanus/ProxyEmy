@@ -32,6 +32,7 @@ set(PROJECT_SOURCES
         ListModels/configurationmappinglistmodel.h ListModels/configurationmappinglistmodel.cpp
         ListModels/configurationaliaseslistmodel.h ListModels/configurationaliaseslistmodel.cpp
         ListModels/notificationpoollistmodel.h ListModels/notificationpoollistmodel.cpp
+        ListModels/pagestabslistmodel.h ListModels/pagestabslistmodel.cpp
         proxyemybackend.cpp proxyemybackend.h
         Models/routemapping.h Models/routemapping.cpp
         qml.qrc

@@ -29,6 +29,7 @@
 #include "ViewModels/notificationhubviewmodel.h"
 #include "ListModels/configurationaliaseslistmodel.h"
 #include "ListModels/notificationpoollistmodel.h"
+#include "ListModels/pagestabslistmodel.h"
 
 QScopedPointer<QFile> LoggerFile;
 
@@ -69,6 +70,7 @@ int main(int argc, char *argv[])
 
 void registerQmlTypes() {
     qmlRegisterType<ProxyEmyBackend>("ProxyEmy.Backend", 1, 0, "ProxyEmyBackend");
+    qmlRegisterType<PagesTabsListModel>("ProxyEmy.Backend", 1, 0, "PagesTabsListModel");
 
     qmlRegisterType<HttpProxyServer>("ProxyEmy.Backend", 1, 0, "HttpProxyServer");
 

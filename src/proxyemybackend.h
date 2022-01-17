@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <qqml.h>
+#include "ListModels/pagestabslistmodel.h"
 
 class ProxyEmyBackend : public QObject
 {
@@ -29,9 +30,11 @@ class ProxyEmyBackend : public QObject
     QML_ELEMENT
 
     Q_PROPERTY(QString windowTitle READ windowTitle NOTIFY windowTitleChanged)
+    Q_PROPERTY(PagesTabsListModel* tabs READ tabs NOTIFY tabsChanged)
 
 private:
     QString m_windowTitle { "ProxyEmy" };
+    QScopedPointer<PagesTabsListModel> m_tabs { new PagesTabsListModel() };
 
 public:
     explicit ProxyEmyBackend(QObject *parent = nullptr);
@@ -39,8 +42,11 @@ public:
     QString windowTitle() const noexcept { return m_windowTitle; };
     void setWindowTitle(const QString& windowTitle) noexcept;
 
+    PagesTabsListModel* tabs() const noexcept { return m_tabs.get(); };
+
 signals:
     void windowTitleChanged();
+    void tabsChanged();
 
 };
 
