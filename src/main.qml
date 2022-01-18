@@ -38,6 +38,13 @@ ApplicationWindow {
     ServerDetailsView {
         id: serverDetailsView
         anchors.fill: parent
+        visible: backend.tabs.isServerInfoVisible
+    }
+
+    RequestsLogView {
+        id: requestsLogView
+        anchors.fill: parent
+        visible: backend.tabs.isRequestLogVisible
     }
 
     NotificationPoolList {

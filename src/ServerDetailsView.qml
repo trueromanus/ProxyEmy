@@ -36,7 +36,9 @@ Item {
 
             BorderedPanel {
                 anchors.fill: parent
-                anchors.margins: 2
+                anchors.leftMargin: 2
+                anchors.rightMargin: 2
+                anchors.bottomMargin: 2
 
                 Column {
                     id: serverInfoPanel

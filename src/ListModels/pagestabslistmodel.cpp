@@ -1,10 +1,28 @@
+/*
+    ProxyEmy local proxy server
+    Copyright (C) 2022 Roman Vladimirov
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include "pagestabslistmodel.h"
 
 PagesTabsListModel::PagesTabsListModel(QObject *parent)
     : QAbstractListModel{parent}
 {
     m_tabs->append("Server Info");
-    m_tabs->append("Request Log");
+    m_tabs->append("Requests Log");
 }
 
 int PagesTabsListModel::rowCount(const QModelIndex &parent) const
@@ -63,4 +81,6 @@ void PagesTabsListModel::activateTab(const int newIndex)
 
     emit dataChanged(index(oldIndex), index(oldIndex));
     emit dataChanged(index(m_activatedTab), index(m_activatedTab));
+    emit isServerInfoVisibleChanged();
+    emit isRequestLogVisibleChanged();
 }
