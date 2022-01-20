@@ -77,6 +77,10 @@ ApplicationWindow {
             id: notificationHub
         }
 
+        RequestsLogViewModel {
+            id: requestsLogViewModel
+        }
+
         Item {
             id: storagePaths
             property string icons: Qt.resolvedUrl("../Views/Icons/")

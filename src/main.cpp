@@ -26,9 +26,11 @@
 #include "Networking/httpproxyserver.h"
 #include "ViewModels/configurationviewmodel.h"
 #include "ViewModels/notificationhubviewmodel.h"
+#include "ViewModels/requestslogviewmodel.h"
 #include "ListModels/configurationaliaseslistmodel.h"
 #include "ListModels/notificationpoollistmodel.h"
 #include "ListModels/pagestabslistmodel.h"
+#include "ListModels/requestlogslistmodel.h"
 
 QScopedPointer<QFile> LoggerFile;
 
@@ -79,6 +81,9 @@ void registerQmlTypes() {
 
     qmlRegisterType<NotificationHubViewModel>("ProxyEmy.Backend", 1, 0, "NotificationHubViewModel");
     qmlRegisterType<NotificationPoolListModel>("ProxyEmy.Backend", 1, 0, "NotificationPoolListModel");
+
+    qmlRegisterType<RequestsLogViewModel>("ProxyEmy.Backend", 1, 0, "RequestsLogViewModel");
+    qmlRegisterType<RequestLogsListModel>("ProxyEmy.Backend", 1, 0, "RequestLogsListModel");
 }
 
 void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)

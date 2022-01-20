@@ -28,13 +28,16 @@ set(PROJECT_SOURCES
         globalenums.h
         ViewModels/configurationviewmodel.cpp ViewModels/configurationviewmodel.h
         ViewModels/notificationhubviewmodel.h ViewModels/notificationhubviewmodel.cpp
+        ViewModels/requestslogviewmodel.h ViewModels/requestslogviewmodel.cpp
         Networking/httpproxyserver.cpp Networking/httpproxyserver.h
         ListModels/configurationmappinglistmodel.h ListModels/configurationmappinglistmodel.cpp
         ListModels/configurationaliaseslistmodel.h ListModels/configurationaliaseslistmodel.cpp
         ListModels/notificationpoollistmodel.h ListModels/notificationpoollistmodel.cpp
         ListModels/pagestabslistmodel.h ListModels/pagestabslistmodel.cpp
+        ListModels/requestlogslistmodel.h ListModels/requestlogslistmodel.cpp
         proxyemybackend.cpp proxyemybackend.h
         Models/routemapping.h Models/routemapping.cpp
+        Models/requestlogitem.h Models/requestlogitem.cpp
         qml.qrc
 )
 
