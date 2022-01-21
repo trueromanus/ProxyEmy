@@ -23,6 +23,8 @@ public:
 
     bool isHasItems() const noexcept { return !m_items->isEmpty(); }
 
+    void addRecord(const QString& path, const QString& protocol, const QString& method, const QString& route) noexcept;
+
 signals:
     void listModelChanged();
     void isHasItemsChanged();

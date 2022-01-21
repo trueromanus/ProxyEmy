@@ -15,7 +15,18 @@ Item {
         Item {
             id: requestsLogHeader
             width: parent.width
-            height: 30
+            height: 40
+
+            Switch {
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                text: "Enable record logs"
+                font.pointSize: 10
+                checked: configurationViewModel.isLogRequests
+                onCheckedChanged: {
+                    configurationViewModel.isLogRequests = checked;
+                }
+            }
         }
 
         Item {
@@ -47,18 +58,20 @@ Item {
                 active: true
             }
             columnWidthProvider: function (column) {
-                return requestsLogViewModel.listModel.getColumnWidth(column, aliasesTable.width);
+                return requestsLogViewModel.listModel.getColumnWidth(column, requestsLogTable.width);
             }
             delegate: Rectangle {
+                id: itemContainer
                 implicitWidth: 20
                 implicitHeight: 30
                 color: "transparent"
 
+                property bool containerHovered: false
+
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
-                    anchors.leftMargin: column === 0 ? 10 : 0
-                    visible: column !== 2 && !isEditing
+                    anchors.leftMargin: 4
                     width: parent.width - 10
                     wrapMode: Text.WrapAnywhere
                     elide: Qt.ElideRight
@@ -66,8 +79,8 @@ Item {
                     text: textValue
 
                     ToolTip.delay: 1000
-                    ToolTip.visible: linkTooltip && hoveredLink
-                    ToolTip.text: linkTooltip
+                    ToolTip.visible: column !== 0 && itemContainer.containerHovered
+                    ToolTip.text: textValue
                 }
 
                 Rectangle {
@@ -75,6 +88,17 @@ Item {
                     color: "#e7eaec"
                     width: parent.width
                     height: 1
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onEntered: {
+                        itemContainer.containerHovered = true;
+                    }
+                    onExited: {
+                        itemContainer.containerHovered = false;
+                    }
                 }
             }
             onWidthChanged: requestsLogTable.forceLayout()

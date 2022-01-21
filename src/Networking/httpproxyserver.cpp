@@ -44,6 +44,14 @@ void HttpProxyServer::setNotificationhub(const NotificationHubViewModel *notific
     m_notificationHub = const_cast<NotificationHubViewModel*>(notificationhub);
 }
 
+void HttpProxyServer::setRequestslog(const RequestsLogViewModel *requestslog) noexcept
+{
+    if (m_requestslog != nullptr) return; // can set requests log only one time
+    if (m_requestslog == requestslog) return;
+
+    m_requestslog = const_cast<RequestsLogViewModel*>(requestslog);
+}
+
 void HttpProxyServer::startServer()
 {
     if (m_configuration->port() <= 0) {
@@ -113,6 +121,10 @@ void HttpProxyServer::processSocket(int socket)
                 closeSocket(tcpSocket);
                 break;
             }
+
+            //add record to log if option is enabled
+            if (m_configuration->isLogRequests()) m_requestslog->addRecord(route, routeData[2], routeData[0], currentRoute->externalRouteOriginal());
+
             innerTcpSocket = createSocket(*currentRoute);
             if (innerTcpSocket == nullptr) {
                 closeSocket(tcpSocket);

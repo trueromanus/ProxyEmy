@@ -3,16 +3,22 @@
 RequestLogsListModel::RequestLogsListModel(QObject *parent)
     : QAbstractTableModel{parent}
 {
-    m_columnWidth->insert(0, 30);
-    m_columnWidth->insert(1, 10);
-    m_columnWidth->insert(2, 10);
-    m_columnWidth->insert(3, 20);
-    m_columnWidth->insert(4, 30);
+    m_columnWidth->insert(0, 6);
+    m_columnWidth->insert(1, 50);
+    m_columnWidth->insert(2, 25);
+    m_columnWidth->insert(3, 19);
 }
 
 void RequestLogsListModel::setup(QSharedPointer<QList<RequestLogItem *> > items)
 {
     m_items = items;
+}
+
+void RequestLogsListModel::refresh()
+{
+    beginResetModel();
+    //TODO: add filtering
+    endResetModel();
 }
 
 int RequestLogsListModel::rowCount(const QModelIndex &parent) const
@@ -26,7 +32,7 @@ int RequestLogsListModel::columnCount(const QModelIndex &parent) const
 {
     if (parent.isValid()) return 0;
 
-    return 5;
+    return 4;
 }
 
 QVariant RequestLogsListModel::data(const QModelIndex &index, int role) const
@@ -40,18 +46,15 @@ QVariant RequestLogsListModel::data(const QModelIndex &index, int role) const
         case TextValueRole: {
             switch (index.column()) {
                 case 0: {
-                    return QVariant(item->path());
-                }
-                case 1: {
                     return QVariant(item->method());
                 }
-                case 2: {
-                    return QVariant(item->protocol());
+                case 1: {
+                    return QVariant(item->path());
                 }
-                case 3: {
+                case 2: {
                     return QVariant(item->raised());
                 }
-                case 4: {
+                case 3: {
                     return QVariant(item->route());
                 }
             }
