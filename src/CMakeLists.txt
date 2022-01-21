@@ -23,6 +23,8 @@ endif ()
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Quick LinguistTools Concurrent Qml QuickControls2 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick LinguistTools Network WebSockets Concurrent Qml QuickControls2 REQUIRED)
 
+set(APP_ICON_RESOURCE_WINDOWS "appicon.rc")
+
 set(PROJECT_SOURCES
         main.cpp
         globalenums.h
@@ -45,6 +47,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(ProxyEmy
         WIN32 MACOSX_BUNDLE
         ${PROJECT_SOURCES}
+        ${APP_ICON_RESOURCE_WINDOWS}
     )
 else()
     if(ANDROID)

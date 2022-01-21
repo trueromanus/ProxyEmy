@@ -18,5 +18,6 @@
         <file>Views/Icons/warn.svg</file>
         <file>Views/ApplicationHeader.qml</file>
         <file>RequestsLogView.qml</file>
+        <file>Views/Icons/logo.svg</file>
     </qresource>
 </RCC>
