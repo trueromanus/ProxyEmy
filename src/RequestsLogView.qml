@@ -30,6 +30,77 @@ Item {
         }
 
         Item {
+            id: requestsLogTableHeader
+            anchors.top: requestsLogHeader.bottom
+            width: parent.width
+            height: 30
+
+            Row {
+                Item {
+                     width: requestsLogViewModel.listModel.getColumnWidth(0, requestsLogTable.width)
+                     height: 30
+
+                     Text {
+                         anchors.left: parent.left
+                         anchors.leftMargin: 6
+                         text: "Verb"
+                         anchors.verticalCenter: parent.verticalCenter
+                         font.weight: Font.Bold
+                         font.pointSize: 10
+                     }
+                }
+                Item {
+                     width: requestsLogViewModel.listModel.getColumnWidth(1, requestsLogTable.width)
+                     height: 30
+
+                     Text {
+                         text: "Path"
+                         anchors.verticalCenter: parent.verticalCenter
+                         font.weight: Font.Bold
+                         font.pointSize: 10
+                     }
+                }
+                Item {
+                     width: requestsLogViewModel.listModel.getColumnWidth(2, requestsLogTable.width)
+                     height: 30
+
+                     Text {
+                         text: "Date"
+                         anchors.verticalCenter: parent.verticalCenter
+                         font.weight: Font.Bold
+                         font.pointSize: 10
+                     }
+                }
+                Item {
+                     width: requestsLogViewModel.listModel.getColumnWidth(3, requestsLogTable.width)
+                     height: 30
+
+                     Text {
+                         text: "Route"
+                         anchors.verticalCenter: parent.verticalCenter
+                         font.weight: Font.Bold
+                         font.pointSize: 10
+                     }
+                }
+            }
+
+            Rectangle {
+                anchors.top: parent.top
+                color: "#e7eaec"
+                width: parent.width
+                height: 1
+            }
+
+            Rectangle {
+                anchors.bottom: parent.bottom
+                color: "#e7eaec"
+                width: parent.width
+                height: 2
+            }
+        }
+
+
+        Item {
             anchors.top: requestsLogHeader.bottom
             anchors.bottom: parent.bottom
             anchors.left: parent.left
@@ -44,7 +115,7 @@ Item {
 
         TableView {
             id: requestsLogTable
-            anchors.top: requestsLogHeader.bottom
+            anchors.top: requestsLogTableHeader.bottom
             visible: requestsLogViewModel.isHasItems
             clip: true
             anchors.bottom: parent.bottom

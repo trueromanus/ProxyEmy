@@ -3,10 +3,10 @@
 RequestLogsListModel::RequestLogsListModel(QObject *parent)
     : QAbstractTableModel{parent}
 {
-    m_columnWidth->insert(0, 6);
+    m_columnWidth->insert(0, 7);
     m_columnWidth->insert(1, 50);
     m_columnWidth->insert(2, 25);
-    m_columnWidth->insert(3, 19);
+    m_columnWidth->insert(3, 18);
 }
 
 void RequestLogsListModel::setup(QSharedPointer<QList<RequestLogItem *> > items)
