@@ -45,8 +45,7 @@ Item {
                          anchors.leftMargin: 6
                          text: "Verb"
                          anchors.verticalCenter: parent.verticalCenter
-                         font.weight: Font.Bold
-                         font.pointSize: 10
+                         font.pointSize: 11
                      }
                 }
                 Item {
@@ -56,8 +55,7 @@ Item {
                      Text {
                          text: "Path"
                          anchors.verticalCenter: parent.verticalCenter
-                         font.weight: Font.Bold
-                         font.pointSize: 10
+                         font.pointSize: 11
                      }
                 }
                 Item {
@@ -67,8 +65,7 @@ Item {
                      Text {
                          text: "Date"
                          anchors.verticalCenter: parent.verticalCenter
-                         font.weight: Font.Bold
-                         font.pointSize: 10
+                         font.pointSize: 11
                      }
                 }
                 Item {
@@ -78,8 +75,7 @@ Item {
                      Text {
                          text: "Route"
                          anchors.verticalCenter: parent.verticalCenter
-                         font.weight: Font.Bold
-                         font.pointSize: 10
+                         font.pointSize: 11
                      }
                 }
             }
@@ -125,6 +121,7 @@ Item {
             rowSpacing: 1
             model: requestsLogViewModel.listModel
             syncDirection: Qt.Vertical
+            flickDeceleration: 1000
             ScrollBar.vertical: ScrollBar{
                 active: true
             }

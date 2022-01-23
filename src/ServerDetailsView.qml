@@ -166,6 +166,7 @@ Item {
                     columnSpacing: 0
                     rowSpacing: 1
                     model: configurationViewModel.aliasesListModel
+                    flickDeceleration: 1000
                     syncDirection: Qt.Vertical
                     ScrollBar.vertical: ScrollBar{
                         active: true
@@ -320,6 +321,7 @@ Item {
                     rowSpacing: 1
                     model: configurationViewModel.mappingListModel
                     syncDirection: Qt.Vertical
+                    flickDeceleration: 1000
                     ScrollBar.vertical: ScrollBar{
                         active: true
                     }

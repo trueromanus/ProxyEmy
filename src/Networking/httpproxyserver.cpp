@@ -100,10 +100,16 @@ void HttpProxyServer::processSocket(int socket)
     RouteMapping *currentRoute = nullptr;
     QTcpSocket* innerTcpSocket = nullptr;
 
+    int64_t totalReaded = 0;
+
     while (true) {
         tcpSocket->waitForReadyRead(1000);
         auto bytesCount = tcpSocket->bytesAvailable();
-        if (bytesCount == 0 || tcpSocket->atEnd()) break;
+        totalReaded += bytesCount;
+        if (bytesCount == 0 || tcpSocket->atEnd()) {
+            if (totalReaded == 0) closeSocket(tcpSocket); // if total read bytes was zero I don't think we can make something
+            break;
+        }
 
         auto bytes = tcpSocket->read(bytesCount);
 
