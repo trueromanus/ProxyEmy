@@ -23,17 +23,23 @@ endif ()
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Quick LinguistTools Concurrent Qml QuickControls2 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick LinguistTools Network WebSockets Concurrent Qml QuickControls2 REQUIRED)
 
+set(APP_ICON_RESOURCE_WINDOWS "appicon.rc")
+
 set(PROJECT_SOURCES
         main.cpp
         globalenums.h
         ViewModels/configurationviewmodel.cpp ViewModels/configurationviewmodel.h
         ViewModels/notificationhubviewmodel.h ViewModels/notificationhubviewmodel.cpp
+        ViewModels/requestslogviewmodel.h ViewModels/requestslogviewmodel.cpp
         Networking/httpproxyserver.cpp Networking/httpproxyserver.h
         ListModels/configurationmappinglistmodel.h ListModels/configurationmappinglistmodel.cpp
         ListModels/configurationaliaseslistmodel.h ListModels/configurationaliaseslistmodel.cpp
         ListModels/notificationpoollistmodel.h ListModels/notificationpoollistmodel.cpp
+        ListModels/pagestabslistmodel.h ListModels/pagestabslistmodel.cpp
+        ListModels/requestlogslistmodel.h ListModels/requestlogslistmodel.cpp
         proxyemybackend.cpp proxyemybackend.h
         Models/routemapping.h Models/routemapping.cpp
+        Models/requestlogitem.h Models/requestlogitem.cpp
         qml.qrc
 )
 
@@ -41,6 +47,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(ProxyEmy
         WIN32 MACOSX_BUNDLE
         ${PROJECT_SOURCES}
+        ${APP_ICON_RESOURCE_WINDOWS}
     )
 else()
     if(ANDROID)

@@ -44,6 +44,14 @@ void HttpProxyServer::setNotificationhub(const NotificationHubViewModel *notific
     m_notificationHub = const_cast<NotificationHubViewModel*>(notificationhub);
 }
 
+void HttpProxyServer::setRequestslog(const RequestsLogViewModel *requestslog) noexcept
+{
+    if (m_requestslog != nullptr) return; // can set requests log only one time
+    if (m_requestslog == requestslog) return;
+
+    m_requestslog = const_cast<RequestsLogViewModel*>(requestslog);
+}
+
 void HttpProxyServer::startServer()
 {
     if (m_configuration->port() <= 0) {
@@ -92,10 +100,16 @@ void HttpProxyServer::processSocket(int socket)
     RouteMapping *currentRoute = nullptr;
     QTcpSocket* innerTcpSocket = nullptr;
 
+    int64_t totalReaded = 0;
+
     while (true) {
         tcpSocket->waitForReadyRead(1000);
         auto bytesCount = tcpSocket->bytesAvailable();
-        if (bytesCount == 0 || tcpSocket->atEnd()) break;
+        totalReaded += bytesCount;
+        if (bytesCount == 0 || tcpSocket->atEnd()) {
+            if (totalReaded == 0) closeSocket(tcpSocket); // if total read bytes was zero I don't think we can make something
+            break;
+        }
 
         auto bytes = tcpSocket->read(bytesCount);
 
@@ -113,6 +127,10 @@ void HttpProxyServer::processSocket(int socket)
                 closeSocket(tcpSocket);
                 break;
             }
+
+            //add record to log if option is enabled
+            if (m_configuration->isLogRequests()) m_requestslog->addRecord(route, routeData[2], routeData[0], currentRoute->externalRouteOriginal());
+
             innerTcpSocket = createSocket(*currentRoute);
             if (innerTcpSocket == nullptr) {
                 closeSocket(tcpSocket);

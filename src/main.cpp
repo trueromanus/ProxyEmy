@@ -16,7 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-
 #include <QGuiApplication>
 #include <QFile>
 #include <QDateTime>
@@ -27,8 +26,11 @@
 #include "Networking/httpproxyserver.h"
 #include "ViewModels/configurationviewmodel.h"
 #include "ViewModels/notificationhubviewmodel.h"
+#include "ViewModels/requestslogviewmodel.h"
 #include "ListModels/configurationaliaseslistmodel.h"
 #include "ListModels/notificationpoollistmodel.h"
+#include "ListModels/pagestabslistmodel.h"
+#include "ListModels/requestlogslistmodel.h"
 
 QScopedPointer<QFile> LoggerFile;
 
@@ -69,6 +71,7 @@ int main(int argc, char *argv[])
 
 void registerQmlTypes() {
     qmlRegisterType<ProxyEmyBackend>("ProxyEmy.Backend", 1, 0, "ProxyEmyBackend");
+    qmlRegisterType<PagesTabsListModel>("ProxyEmy.Backend", 1, 0, "PagesTabsListModel");
 
     qmlRegisterType<HttpProxyServer>("ProxyEmy.Backend", 1, 0, "HttpProxyServer");
 
@@ -78,6 +81,9 @@ void registerQmlTypes() {
 
     qmlRegisterType<NotificationHubViewModel>("ProxyEmy.Backend", 1, 0, "NotificationHubViewModel");
     qmlRegisterType<NotificationPoolListModel>("ProxyEmy.Backend", 1, 0, "NotificationPoolListModel");
+
+    qmlRegisterType<RequestsLogViewModel>("ProxyEmy.Backend", 1, 0, "RequestsLogViewModel");
+    qmlRegisterType<RequestLogsListModel>("ProxyEmy.Backend", 1, 0, "RequestLogsListModel");
 }
 
 void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)

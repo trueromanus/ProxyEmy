@@ -32,10 +32,19 @@ ApplicationWindow {
         anchors.fill: parent
         color: "white"
     }
+    header: ApplicationHeader {
+    }
 
     ServerDetailsView {
         id: serverDetailsView
         anchors.fill: parent
+        visible: backend.tabs.isServerInfoVisible
+    }
+
+    RequestsLogView {
+        id: requestsLogView
+        anchors.fill: parent
+        visible: backend.tabs.isRequestLogVisible
     }
 
     NotificationPoolList {
@@ -55,6 +64,7 @@ ApplicationWindow {
             id: httpProxyServer
             configuration: configurationViewModel
             notificationhub: notificationHub
+            requestslog: requestsLogViewModel
             Component.onDestruction: {
                 httpProxyServer.stopServer();
             }
@@ -66,6 +76,10 @@ ApplicationWindow {
 
         NotificationHubViewModel {
             id: notificationHub
+        }
+
+        RequestsLogViewModel {
+            id: requestsLogViewModel
         }
 
         Item {

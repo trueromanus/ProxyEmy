@@ -45,6 +45,15 @@ ConfigurationViewModel::ConfigurationViewModel(QObject *parent) : QObject(parent
     m_aliasesListModel->setup(m_aliases);
 }
 
+void ConfigurationViewModel::setIsLogRequests(const bool isLogRequests) noexcept
+{
+    if (m_isLogRequests == isLogRequests) return;
+
+    m_isLogRequests = isLogRequests;
+    emit isLogRequestsChanged();
+    markChanges();
+}
+
 RouteMapping *ConfigurationViewModel::getMappingByRoute(const QString &route)
 {
     auto iterator = std::find_if(
@@ -202,6 +211,8 @@ void ConfigurationViewModel::saveConfiguration(const bool saveOpened, const QStr
     out << YAML::Value << m_port;
     out << YAML::Key << "secure";
     out << YAML::Value << m_isSecure;
+    out << YAML::Key << "logrequests";
+    out << YAML::Value << m_isLogRequests;
 
     out << YAML::Key << "aliases";
     out << YAML::Value << YAML::BeginSeq;
@@ -259,6 +270,7 @@ void ConfigurationViewModel::readYaml(const QString &path) noexcept
 
         if (!readPort(yamlRoot)) return;
         if (!readSecurePort(yamlRoot)) return;
+        if (!readIsLogRequests(yamlRoot)) return;
         if (!readAddresses(yamlRoot)) return;
         if (!readMappings(yamlRoot)) return;
 
@@ -282,10 +294,14 @@ bool ConfigurationViewModel::readPort(const YAML::Node &node) noexcept
 
 bool ConfigurationViewModel::readSecurePort(const YAML::Node &node) noexcept
 {
-    const bool isSecure = node["secure"].as<bool>(false);
-    if (isSecure == 0) return true; // omit not critical
+    m_isSecure = node["secure"].as<bool>(false);
 
-    m_isSecure = isSecure;
+    return true;
+}
+
+bool ConfigurationViewModel::readIsLogRequests(const YAML::Node &node) noexcept
+{
+    m_isLogRequests = node["logrequests"].as<bool>(false);
 
     return true;
 }

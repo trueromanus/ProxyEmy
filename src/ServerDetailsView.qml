@@ -36,7 +36,9 @@ Item {
 
             BorderedPanel {
                 anchors.fill: parent
-                anchors.margins: 2
+                anchors.leftMargin: 2
+                anchors.rightMargin: 2
+                anchors.bottomMargin: 2
 
                 Column {
                     id: serverInfoPanel
@@ -164,6 +166,7 @@ Item {
                     columnSpacing: 0
                     rowSpacing: 1
                     model: configurationViewModel.aliasesListModel
+                    flickDeceleration: 1000
                     syncDirection: Qt.Vertical
                     ScrollBar.vertical: ScrollBar{
                         active: true
@@ -318,6 +321,7 @@ Item {
                     rowSpacing: 1
                     model: configurationViewModel.mappingListModel
                     syncDirection: Qt.Vertical
+                    flickDeceleration: 1000
                     ScrollBar.vertical: ScrollBar{
                         active: true
                     }
