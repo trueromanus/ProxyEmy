@@ -58,6 +58,7 @@ ApplicationWindow {
     Item {
         ProxyEmyBackend {
             id: backend
+            notificationHub: notificationHub
         }
 
         HttpProxyServer {

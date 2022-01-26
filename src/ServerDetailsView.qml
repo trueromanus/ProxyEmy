@@ -124,6 +124,16 @@ Item {
                             configurationViewModel.saveConfiguration(true, "");
                         }
                     }
+                    LinkedText {
+                        visible: configurationViewModel.serverProtocol === `https`
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                        maximumLineCount: 2
+                        text: "For avoiding browser warnings you can <a href='install'>install a root certificate</a>."
+                        onLinkActivated: function (link){
+                            backend.installRootCA();
+                        }
+                    }
                 }
 
                 Item {
