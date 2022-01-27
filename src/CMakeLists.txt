@@ -14,12 +14,6 @@ set(QML_IMPORT_MAJOR_VERSION 1)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if (WIN32)
-    set(WIN32_ON_OFF_SWITCH "WIN32")
-else ()
-    set(WIN32_ON_OFF_SWITCH "")
-endif ()
-
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Quick LinguistTools Concurrent Qml QuickControls2 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick LinguistTools Network WebSockets Concurrent Qml QuickControls2 REQUIRED)
 
@@ -95,3 +89,7 @@ endif()
 
 include_directories(BEFORE SYSTEM ${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR}/include)
 target_link_libraries(ProxyEmy PRIVATE yaml-cpp)
+
+if(WIN32)
+    target_link_libraries(ProxyEmy PRIVATE Crypt32)
+endif()

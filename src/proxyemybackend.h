@@ -23,6 +23,7 @@
 #include <QObject>
 #include <qqml.h>
 #include "ListModels/pagestabslistmodel.h"
+#include "ViewModels/notificationhubviewmodel.h"
 
 class ProxyEmyBackend : public QObject
 {
@@ -30,11 +31,15 @@ class ProxyEmyBackend : public QObject
     QML_ELEMENT
 
     Q_PROPERTY(QString windowTitle READ windowTitle NOTIFY windowTitleChanged)
+    Q_PROPERTY(bool rootCertificateInstalled READ rootCertificateInstalled NOTIFY rootCertificateInstalledChanged)
     Q_PROPERTY(PagesTabsListModel* tabs READ tabs NOTIFY tabsChanged)
+    Q_PROPERTY(NotificationHubViewModel* notificationHub READ notificationHub WRITE setNotificationHub NOTIFY notificationHubChanged)
 
 private:
     QString m_windowTitle { "ProxyEmy" };
     QScopedPointer<PagesTabsListModel> m_tabs { new PagesTabsListModel() };
+    NotificationHubViewModel* m_notificationHub { nullptr };
+    bool m_rootCertificateInstalled { false };
 
 public:
     explicit ProxyEmyBackend(QObject *parent = nullptr);
@@ -42,11 +47,24 @@ public:
     QString windowTitle() const noexcept { return m_windowTitle; };
     void setWindowTitle(const QString& windowTitle) noexcept;
 
+    bool rootCertificateInstalled() const noexcept { return m_rootCertificateInstalled; }
+
     PagesTabsListModel* tabs() const noexcept { return m_tabs.get(); };
+
+    NotificationHubViewModel* notificationHub() const noexcept { return m_notificationHub; }
+    void setNotificationHub(const NotificationHubViewModel* viewModel) noexcept;
+
+    Q_INVOKABLE void installRootCA() noexcept;
+
+private:
+    bool installRootCertificate() noexcept;
+    bool isRootCertificateInstalled() noexcept;
 
 signals:
     void windowTitleChanged();
     void tabsChanged();
+    void notificationHubChanged();
+    void rootCertificateInstalledChanged();
 
 };
 
