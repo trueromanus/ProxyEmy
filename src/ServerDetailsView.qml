@@ -125,7 +125,7 @@ Item {
                         }
                     }
                     LinkedText {
-                        visible: configurationViewModel.serverProtocol === `https`
+                        visible: configurationViewModel.isSecure && !backend.rootCertificateInstalled
                         width: parent.width
                         wrapMode: Text.WordWrap
                         maximumLineCount: 2

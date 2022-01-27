@@ -26,6 +26,7 @@
 
 ProxyEmyBackend::ProxyEmyBackend(QObject *parent) : QObject(parent)
 {
+    m_rootCertificateInstalled = isRootCertificateInstalled();
 }
 
 void ProxyEmyBackend::setWindowTitle(const QString &windowTitle) noexcept
@@ -49,7 +50,8 @@ void ProxyEmyBackend::installRootCA() noexcept
     auto installed = installRootCertificate();
     if (installed) {
         m_notificationHub->pushInfoMessage("Root certificate", "Certificate installed sucessfully!");
-        //TODO: save mark of install
+        m_rootCertificateInstalled = true;
+        emit rootCertificateInstalledChanged();
         return;
     }
     m_notificationHub->pushErrorMessage("Root certificate", "The certificate was not installed.");
@@ -74,6 +76,26 @@ bool ProxyEmyBackend::installRootCertificate() noexcept
     CertCloseStore(hRootCertStore, 0);
 
     return result;
+#else
+    return false;
+#endif
+}
+
+bool ProxyEmyBackend::isRootCertificateInstalled() noexcept
+{
+#ifdef Q_OS_WIN
+    HCERTSTORE hRootCertStore = CertOpenSystemStoreA(NULL, "ROOT");
+
+    auto founded = CertFindCertificateInStore(
+          hRootCertStore,
+          (PKCS_7_ASN_ENCODING | X509_ASN_ENCODING),
+          0,
+          CERT_FIND_SUBJECT_STR_A,
+          "ProxyEmy-Root-CA",
+          NULL);
+    CertCloseStore(hRootCertStore, 0);
+
+    return founded != NULL;
 #else
     return false;
 #endif
