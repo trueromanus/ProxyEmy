@@ -5,7 +5,7 @@ All application configuration are stored in a YAML file and can be shared with o
 
 ## Use cases
 - Resolve CORS issues in local development, all your websites and services will be on one host.
-- Test web applications that require a secure (HTTPS) connection on a local machine (PWA etc).
+- Test web applications that require a secure (HTTPS) connection on a local machine (PWA, Android emulator etc).
 - Application can be logging external requests and show them on a special page in UI.
 - Unification of all your (micro)services on one host inside human-readable aliases or prefixes   
   as example  
