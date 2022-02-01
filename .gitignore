@@ -55,3 +55,4 @@ yaml-cpp
 
 deploy/output
 deploy/releasebuild
+deploy/*.zip

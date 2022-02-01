@@ -25,7 +25,9 @@ Remove-Item -Path ../deploy/output\QtQuick\Controls\Imagine -Recurse -Force
 Remove-Item -Path ../deploy/output\QtQuick\Controls\Material -Recurse -Force
 Remove-Item -Path ../deploy/output\QtQuick\Controls\Windows -Recurse -Force
 
-# Copy dynamically linked libraries
+# Copy license
+New-Item -Path ../deploy/output -Name "licenses" -ItemType "directory"
+Copy-Item -Path ../deploy/licenses/* -Destination ../deploy/output/licenses
 
 # Compress final build to zip file
 Remove-Item -Path ../deploy/release.zip -ErrorAction Ignore
