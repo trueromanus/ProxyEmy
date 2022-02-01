@@ -12,12 +12,22 @@ RequestLogsListModel::RequestLogsListModel(QObject *parent)
 void RequestLogsListModel::setup(QSharedPointer<QList<RequestLogItem *> > items)
 {
     m_items = items;
+
+    refresh();
 }
 
 void RequestLogsListModel::refresh()
 {
     beginResetModel();
-    //TODO: add filtering
+
+    m_filtertedItems->clear();
+
+    foreach (auto item, *m_items) {
+        m_filtertedItems->append(item);
+    }
+
+    sortFilteringItems();
+
     endResetModel();
 }
 
@@ -25,7 +35,7 @@ int RequestLogsListModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid()) return 0;
 
-    return m_items->size();
+    return m_filtertedItems->size();
 }
 
 int RequestLogsListModel::columnCount(const QModelIndex &parent) const
@@ -39,7 +49,7 @@ QVariant RequestLogsListModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid()) return QVariant();
 
-    auto item = m_items->at(index.row());
+    auto item = m_filtertedItems->at(index.row());
     if (item == nullptr) return QVariant();
 
     switch (role) {
@@ -80,4 +90,15 @@ int RequestLogsListModel::getColumnWidth(const int index, const int fullWidth) c
     if (m_columnWidth->contains(index)) width = m_columnWidth->value(index);
 
     return width > 0 ? width * fullWidth / 100 : 0;
+}
+
+void RequestLogsListModel::sortFilteringItems() noexcept
+{
+    std::sort(
+        m_filtertedItems->begin(),
+        m_filtertedItems->end(),
+        [&](const RequestLogItem* first, const RequestLogItem* second) {
+            return first->raised() > second->raised();
+        }
+    );
 }

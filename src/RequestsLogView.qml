@@ -147,7 +147,7 @@ Item {
                     text: textValue
 
                     ToolTip.delay: 1000
-                    ToolTip.visible: column !== 0 && itemContainer.containerHovered
+                    ToolTip.visible: column !== 0 && textValue.length > 20 && itemContainer.containerHovered
                     ToolTip.text: textValue
                 }
 

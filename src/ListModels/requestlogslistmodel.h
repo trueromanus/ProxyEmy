@@ -12,6 +12,7 @@ class RequestLogsListModel : public QAbstractTableModel
 
 private:
     QSharedPointer<QList<RequestLogItem*>> m_items { nullptr };
+    QScopedPointer<QList<RequestLogItem*>> m_filtertedItems { new QList<RequestLogItem*>() };
     QScopedPointer<QMap<int, int>> m_columnWidth { new QMap<int, int>() };
 
     enum RequestItemRoles {
@@ -31,6 +32,9 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE int getColumnWidth(const int index, const int fullWidth) const;
+
+private:
+    void sortFilteringItems() noexcept;
 
 signals:
 
