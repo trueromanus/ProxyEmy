@@ -56,3 +56,6 @@ yaml-cpp
 deploy/output
 deploy/releasebuild
 deploy/*.zip
+scripts/*.crt
+scripts/*.key
+scripts/*.cer

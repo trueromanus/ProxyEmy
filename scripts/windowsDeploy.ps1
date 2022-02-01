@@ -29,6 +29,12 @@ Remove-Item -Path ../deploy/output\QtQuick\Controls\Windows -Recurse -Force
 New-Item -Path ../deploy/output -Name "licenses" -ItemType "directory"
 Copy-Item -Path ../deploy/licenses/* -Destination ../deploy/output/licenses
 
+# Copy certificates
+New-Item -Path ../deploy/output -Name "certificate" -ItemType "directory"
+Copy-Item -Path *.crt -Destination ../deploy/output/certificate
+Copy-Item -Path *.key -Destination ../deploy/output/certificate
+Copy-Item -Path *.cer -Destination ../deploy/output/certificate
+
 # Compress final build to zip file
 Remove-Item -Path ../deploy/release.zip -ErrorAction Ignore
 Compress-Archive -Path ../deploy/output/* -DestinationPath ../deploy/release.zip
