@@ -14,3 +14,19 @@ Currently not supported h2/h3 and WS/WSS.
   http://localhost/auth - for authorization service (actually https://192.168.55.20:8000)  
   http://localhost/user - users service (actually http://commonuserservice:12230)  
   and so on
+  
+## Supported platforms
+- Windows 10+
+- Linux (partually support)
+- macOS 10.14+ (partually support)
+
+## How to build
+### Requirements
+- CMake >= 3.14
+- Qt >= 6.2.1
+### Commands
+```
+cd src
+cmake --build
+cmake --install
+```
