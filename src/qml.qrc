@@ -19,5 +19,8 @@
         <file>Views/ApplicationHeader.qml</file>
         <file>RequestsLogView.qml</file>
         <file>Views/Icons/logo.svg</file>
+        <file>Views/Controls/ContentPopup.qml</file>
+        <file>Views/TextFieldValidateStyle.qml</file>
+        <file>Views/AddAliasOrMappingCard.qml</file>
     </qresource>
 </RCC>

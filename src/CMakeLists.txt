@@ -25,6 +25,7 @@ set(PROJECT_SOURCES
         ViewModels/configurationviewmodel.cpp ViewModels/configurationviewmodel.h
         ViewModels/notificationhubviewmodel.h ViewModels/notificationhubviewmodel.cpp
         ViewModels/requestslogviewmodel.h ViewModels/requestslogviewmodel.cpp
+        ViewModels/addoptionscardviewmodel.h ViewModels/addoptionscardviewmodel.cpp
         Networking/httpproxyserver.cpp Networking/httpproxyserver.h
         ListModels/configurationmappinglistmodel.h ListModels/configurationmappinglistmodel.cpp
         ListModels/configurationaliaseslistmodel.h ListModels/configurationaliaseslistmodel.cpp

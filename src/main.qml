@@ -23,6 +23,7 @@ import ProxyEmy.Backend
 import "Views"
 
 ApplicationWindow {
+    id: applicationWindow
     minimumWidth: 510
     width: 640
     height: 480
@@ -81,6 +82,11 @@ ApplicationWindow {
 
         RequestsLogViewModel {
             id: requestsLogViewModel
+        }
+
+        AddOptionsCardViewModel {
+            id: addOptionsCardViewModel
+            configuration: configurationViewModel
         }
 
         Item {

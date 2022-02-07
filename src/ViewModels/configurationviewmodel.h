@@ -84,10 +84,10 @@ public:
 
     Q_INVOKABLE void openConfigFolder() const noexcept;
     Q_INVOKABLE void editMapping(const int id) noexcept;
-    Q_INVOKABLE void addMapping(const QString& localRoute, const QString& externalRoute) noexcept;
+    Q_INVOKABLE bool addMapping(const QString& localRoute, const QString& externalRoute) noexcept;
     Q_INVOKABLE void deleteMapping(const int index) noexcept;
     Q_INVOKABLE void editAlias(const QString& key) noexcept;
-    Q_INVOKABLE void addAlias(const QString& alias, const QString& value) noexcept;
+    Q_INVOKABLE std::tuple<bool, QString, QString> addAlias(const QString& alias, const QString& value) noexcept;
     Q_INVOKABLE void deleteAlias(const QString& key) noexcept;
     Q_INVOKABLE void saveConfiguration(const bool saveOpened, const QString& path) noexcept;
 

@@ -156,7 +156,8 @@ Item {
                         anchors.rightMargin: 8
                         title: "Add"
                         onPressed: {
-
+                            addOptionsCardViewModel.cardMode = 1;
+                            addOptionsCardViewModel.openCard();
                         }
                     }
                 }
@@ -311,7 +312,8 @@ Item {
                     anchors.rightMargin: 8
                     title: "Add"
                     onPressed: {
-
+                        addOptionsCardViewModel.cardMode = 2;
+                        addOptionsCardViewModel.openCard();
                     }
                 }
             }
@@ -442,6 +444,9 @@ Item {
         onAccepted: {
             configurationViewModel.saveConfiguration(false, selectedFile);
         }
-        onRejected: { console.log("Rejected") }
+    }
+
+    AddAliasOrMappingCard {
+        id: addCard
     }
 }

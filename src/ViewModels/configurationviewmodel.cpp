@@ -123,11 +123,11 @@ void ConfigurationViewModel::editMapping(const int id) noexcept
     setupRootMapping();
 }
 
-void ConfigurationViewModel::addMapping(const QString &localRoute, const QString &externalRoute) noexcept
+bool ConfigurationViewModel::addMapping(const QString &localRoute, const QString &externalRoute) noexcept
 {
     if (!checkDuplicateRoute(-1, localRoute)) {
         emit errorMessage("This route already used in another mapping!", "Add route mapping");
-        return;
+        return false;
     }
 
     m_lastIdentifier++;
@@ -143,6 +143,7 @@ void ConfigurationViewModel::addMapping(const QString &localRoute, const QString
     m_configurationMappingListModel->refresh();
     markChanges();
     setupRootMapping();
+    return true;
 }
 
 void ConfigurationViewModel::deleteMapping(const int index) noexcept
@@ -178,17 +179,17 @@ void ConfigurationViewModel::editAlias(const QString &key) noexcept
     markChanges();
 }
 
-void ConfigurationViewModel::addAlias(const QString &alias, const QString &value) noexcept
+std::tuple<bool, QString, QString> ConfigurationViewModel::addAlias(const QString &alias, const QString &value) noexcept
 {
     if (m_aliases->contains(alias)) {
-        emit errorMessage("This alias already created!", "Add alias");
-        return;
+        return std::make_tuple<bool, QString, QString>(false, "name", "This alias already created");
     }
 
     m_aliases->insert(alias, value);
     m_aliasesListModel->refresh();
     refreshAllAfterAlias();
     markChanges();
+    return std::make_tuple<bool, QString, QString>(true, "", "");
 }
 
 void ConfigurationViewModel::deleteAlias(const QString &key) noexcept
