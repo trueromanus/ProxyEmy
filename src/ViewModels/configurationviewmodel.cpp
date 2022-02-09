@@ -123,11 +123,10 @@ void ConfigurationViewModel::editMapping(const int id) noexcept
     setupRootMapping();
 }
 
-bool ConfigurationViewModel::addMapping(const QString &localRoute, const QString &externalRoute) noexcept
+std::tuple<bool, QString, QString> ConfigurationViewModel::addMapping(const QString &localRoute, const QString &externalRoute) noexcept
 {
     if (!checkDuplicateRoute(-1, localRoute)) {
-        emit errorMessage("This route already used in another mapping!", "Add route mapping");
-        return false;
+        return std::make_tuple<bool, QString, QString>(false, "name", "This route already used in another mapping!");
     }
 
     m_lastIdentifier++;
@@ -143,7 +142,7 @@ bool ConfigurationViewModel::addMapping(const QString &localRoute, const QString
     m_configurationMappingListModel->refresh();
     markChanges();
     setupRootMapping();
-    return true;
+    return std::make_tuple<bool, QString, QString>(true, "", "");
 }
 
 void ConfigurationViewModel::deleteMapping(const int index) noexcept

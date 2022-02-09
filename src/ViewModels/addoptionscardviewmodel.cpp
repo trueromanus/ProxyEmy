@@ -95,22 +95,20 @@ void AddOptionsCardViewModel::saveCard() noexcept
     setValueFieldErrorMessage("");
 
     auto result = false;
-    if (m_cardMode == OptionsCardModes::AddAlias) {
-        auto resultTuple = m_configuration->addAlias(m_nameField, m_valueField);
-        result = std::get<0>(resultTuple);
-        if (!result) {
-            auto errorField = std::get<1>(resultTuple);
-            auto errorMessage = std::get<2>(resultTuple);
-            if (errorField == "name") {
-                setNameFieldErrorMessage(errorMessage);
-            } else {
-                setValueFieldErrorMessage(errorMessage);
-            }
-        }
-    }
+    std::tuple<bool, QString, QString> resultTuple;
 
-    if (m_cardMode == OptionsCardModes::AddMapping) {
-        result = m_configuration->addMapping(m_nameField, m_valueField);
+    if (m_cardMode == OptionsCardModes::AddAlias) resultTuple = m_configuration->addAlias(m_nameField, m_valueField);
+    if (m_cardMode == OptionsCardModes::AddMapping) resultTuple = m_configuration->addMapping(m_nameField, m_valueField);
+
+    result = std::get<0>(resultTuple);
+    if (!result) {
+        auto errorField = std::get<1>(resultTuple);
+        auto errorMessage = std::get<2>(resultTuple);
+        if (errorField == "name") {
+            setNameFieldErrorMessage(errorMessage);
+        } else {
+            setValueFieldErrorMessage(errorMessage);
+        }
     }
 
     if (result) closeCard();
