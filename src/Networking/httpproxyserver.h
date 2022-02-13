@@ -39,6 +39,7 @@ class HttpProxyServer : public QTcpServer
 
 private:
     const QString m_EmptyResponse = "HTTP/1.1 404 Not Found\r\nServer: ProxyEmy\r\nContent-Type: text/plain\r\nContent-Length: 20\r\nConnection: close\r\n\r\n<b>404 Not Found</b>";
+    const QString m_NoContentResponse = "HTTP/1.1 204 No Content\r\nServer: ProxyEmy\r\nConnection: close\r\n\r\n";
     ConfigurationViewModel* m_configuration { nullptr };
     NotificationHubViewModel* m_notificationHub { nullptr };
     RequestsLogViewModel* m_requestslog { nullptr };

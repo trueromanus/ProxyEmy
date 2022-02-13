@@ -124,6 +124,7 @@ void HttpProxyServer::processSocket(int socket)
             auto currentRoute = m_configuration->getMappingByRoute(route);
             if (currentRoute == nullptr) {
                 tcpSocket->write(m_EmptyResponse.toUtf8());
+                tcpSocket->waitForBytesWritten(1000);
                 closeSocket(tcpSocket);
                 break;
             }
@@ -133,6 +134,8 @@ void HttpProxyServer::processSocket(int socket)
 
             innerTcpSocket = createSocket(*currentRoute);
             if (innerTcpSocket == nullptr) {
+                tcpSocket->write(m_NoContentResponse.toUtf8());
+                tcpSocket->waitForBytesWritten(1000);
                 closeSocket(tcpSocket);
                 break;
             }
