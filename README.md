@@ -2,6 +2,7 @@
 
 Simple and fast local reverse proxy server fit as tool as development.  
 All application configuration are stored in a YAML file and can be shared with other teammates (via Git etc).  
+You can also change the configuration in a simple UI.  
 Currently not supported h2/h3 and WS/WSS.
 
 ## Use cases

@@ -56,10 +56,13 @@ void ConfigurationViewModel::setIsLogRequests(const bool isLogRequests) noexcept
 
 RouteMapping *ConfigurationViewModel::getMappingByRoute(const QString &route)
 {
+    const RouteMapping* rootMapping = m_rootMapping;
     auto iterator = std::find_if(
         m_mappings->cbegin(),
         m_mappings->cend(),
-        [route] (const RouteMapping* routeMapping) {
+        [route, rootMapping] (const RouteMapping* routeMapping) {
+            if (routeMapping == rootMapping) return false; // remove root from search because it can be issue
+
             return route.startsWith(routeMapping->localRoute());
         }
     );
