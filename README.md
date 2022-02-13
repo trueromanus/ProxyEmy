@@ -15,7 +15,22 @@ Currently not supported h2/h3 and WS/WSS.
   http://localhost/auth - for authorization service (actually https://192.168.55.20:8000)  
   http://localhost/user - users service (actually http://commonuserservice:12230)  
   and so on
+## Example of configuration file
+```yaml
+port: 8090
+secure: true
+logrequests: false
+
+aliases:
+  - innerhost http://192.168.3.2
+  - outerhost https://outerhost.com
   
+mappings:
+  - / {innerhost}
+  - /auth {innerhost}:8080/api/auth
+  - /processing {innerhost}:9000
+  - /ticketintegration {outerhost}/tickets
+```
 ## Supported platforms
 - Windows 10+
 - Linux (partually support)
