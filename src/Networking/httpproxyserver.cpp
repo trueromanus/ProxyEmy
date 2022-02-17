@@ -23,6 +23,7 @@
 #include <QByteArray>
 #include <QTextStream>
 #include <QCoreApplication>
+#include <QSslError>
 
 HttpProxyServer::HttpProxyServer(QObject *parent) : QTcpServer(parent)
 {
@@ -153,12 +154,30 @@ void HttpProxyServer::processSocket(int socket)
         return;
     }
 
+    bool isAcceptBytes = false;
+    bool isAcceptBytesCheck = false;
+
     while (true) {
-        innerTcpSocket->waitForReadyRead(1000);
+        innerTcpSocket->waitForReadyRead(1000);        
         auto bytesCount = innerTcpSocket->bytesAvailable();
-        if (bytesCount == 0 || innerTcpSocket->atEnd()) break;
+        if (bytesCount == 0 || innerTcpSocket->atEnd()) {
+            if (!isAcceptBytes) break;
+
+            auto bytes = readAllAvailableBytesFromSocket(tcpSocket);
+            if (bytes.length() == 0) break;
+
+            innerTcpSocket->write(bytes);
+            innerTcpSocket->waitForBytesWritten(2000);
+            continue;
+        }
 
         auto bytes = innerTcpSocket->read(bytesCount);
+
+        if (!isAcceptBytesCheck) {
+            isAcceptBytesCheck = true;
+            isAcceptBytes = isAcceptRanges(bytes);
+        }
+
         tcpSocket->write(bytes);
         tcpSocket->waitForBytesWritten();
     }
@@ -185,6 +204,11 @@ QTcpSocket* HttpProxyServer::createSocket(const RouteMapping &mapping)
     auto isSecure = mapping.isExternalSecure();
     if (isSecure) {
         auto socket = new QSslSocket();
+
+        //Disclaimer, very often dev servers placed on localhost have self-signed certificates
+        //what because I added an exception for handling this kind of errors
+        socket->setPeerVerifyMode(QSslSocket::QueryPeer);
+
         socket->connectToHostEncrypted(mapping.getExternalHost(), mapping.getExternalPort());
         if (!socket->waitForEncrypted(2000)) {
             qWarning() << "Error while TLS handshake " << mapping.getExternalHost() << mapping.getExternalPort() << " " << socket->errorString();
@@ -254,6 +278,26 @@ QList<QByteArray> HttpProxyServer::getRoute(QByteArray bytes)
     auto routeHeader = bytes.mid(0, index);
 
     return routeHeader.split(' ');
+}
+
+bool HttpProxyServer::isAcceptRanges(QByteArray bytes)
+{
+    return bytes.indexOf("Accept-Ranges: bytes") > -1;
+}
+
+QByteArray HttpProxyServer::readAllAvailableBytesFromSocket(QTcpSocket * socket)
+{
+    QByteArray result;
+
+    while (true) {
+        socket->waitForReadyRead(1000);
+        auto bytesCount = socket->bytesAvailable();
+        if (bytesCount == 0 || socket->atEnd()) return result;
+
+        result.append(socket->read(bytesCount));
+    }
+
+    return result;
 }
 
 QByteArray HttpProxyServer::replaceHost(QByteArray bytes, RouteMapping *mapping, QList<QByteArray>& routeData)

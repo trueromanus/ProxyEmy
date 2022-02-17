@@ -37,4 +37,4 @@ Copy-Item -Path *.cer -Destination ../deploy/output/certificate
 
 # Compress final build to zip file
 Remove-Item -Path ../deploy/release.zip -ErrorAction Ignore
-Compress-Archive -Path ../deploy/output/* -DestinationPath ../deploy/release.zip
+Compress-Archive -Path ../deploy/output/* -DestinationPath ../deploy/windows.amd64-0.0.0.zip
