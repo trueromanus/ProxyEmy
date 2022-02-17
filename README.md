@@ -17,14 +17,20 @@ Currently not supported h2/h3 and WS/WSS.
   and so on
 ## Example of configuration file
 ```yaml
-port: 8090
-secure: true
-logrequests: false
+port: 8090  # Specify port for proxy server
+secure: true  # This option enabling (if value is equal true) secure HTTPS connection
+logrequests: false  # You can logging routes if value is equal true  
 
-aliases:
-  - innerhost http://192.168.3.2
+# Section for specifying aliases, if you have repetitive paths it will be better to specify it as an alias.
+# format for value is `<alias name> <original value>`
+aliases:  
+  - innerhost http://192.168.3.2 
   - outerhost https://outerhost.com
-  
+
+# Section for specifying mapping between inner route and the external route. 
+# The external route can be any valid address, as internal also as external from the web.
+# format for value is `<inner route, must be start with slash> <full path for proxy, you can using aliases>`
+# for using alias inside mapping value you need using format {<name of alias>}.
 mappings:
   - / {innerhost}
   - /auth {innerhost}:8080/api/auth
