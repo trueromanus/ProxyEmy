@@ -60,3 +60,5 @@ deploy/release
 scripts/*.crt
 scripts/*.key
 scripts/*.cer
+
+windowsclibs

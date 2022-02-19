@@ -35,6 +35,9 @@ Copy-Item -Path *.crt -Destination ../deploy/output/certificate
 Copy-Item -Path *.key -Destination ../deploy/output/certificate
 Copy-Item -Path *.cer -Destination ../deploy/output/certificate
 
+# Copy Windows C runtime libraries
+Copy-Item -Path ../windowsclibs/*.dll -Destination ../deploy/output
+
 # Compress final build to zip file
 Remove-Item -Path ../deploy/release.zip -ErrorAction Ignore
 Compress-Archive -Path ../deploy/output/* -DestinationPath ../deploy/windows.amd64-0.0.0.zip
