@@ -17,9 +17,10 @@ Currently not supported h2/h3 and WS/WSS.
   and so on
 ## Example of configuration file
 ```yaml
-port: 8090  # Specify port for proxy server
-secure: true  # This option enabling (if value is equal true) secure HTTPS connection
-logrequests: false  # You can logging routes if value is equal true  
+port: 8090  # Specify port for proxy server. Default is 8080.
+secure: true  # This option enabling (if value is equal true) secure HTTPS connection. Default is false.
+logrequests: false  # You can logging routes if value is equal true. Default is false.
+verifyCertificates: true  # You can enable strong check (if value is equal true) for certificates while SSL handshake. Default is false.
 
 # Section for specifying aliases, if you have repetitive paths it will be better to specify it as an alias.
 # format for value is `<alias name> <original value>`
