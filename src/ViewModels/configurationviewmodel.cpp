@@ -54,6 +54,14 @@ void ConfigurationViewModel::setIsLogRequests(const bool isLogRequests) noexcept
     markChanges();
 }
 
+void ConfigurationViewModel::setNeedVerifyCertificates(const bool needVerifyCertificates) noexcept
+{
+    if (m_needVerifyCertificates == needVerifyCertificates) return;
+
+    m_needVerifyCertificates = needVerifyCertificates;
+    emit needVerifyCertificatesChanged();
+}
+
 RouteMapping *ConfigurationViewModel::getMappingByRoute(const QString &route)
 {
     const RouteMapping* rootMapping = m_rootMapping;
@@ -216,6 +224,10 @@ void ConfigurationViewModel::saveConfiguration(const bool saveOpened, const QStr
     out << YAML::Value << m_isSecure;
     out << YAML::Key << "logrequests";
     out << YAML::Value << m_isLogRequests;
+    if (m_needVerifyCertificates) {
+        out << YAML::Key << "verifyCertificates";
+        out << YAML::Value << m_needVerifyCertificates;
+    }
 
     out << YAML::Key << "aliases";
     out << YAML::Value << YAML::BeginSeq;
@@ -276,6 +288,7 @@ void ConfigurationViewModel::readYaml(const QString &path) noexcept
         if (!readIsLogRequests(yamlRoot)) return;
         if (!readAddresses(yamlRoot)) return;
         if (!readMappings(yamlRoot)) return;
+        if (!readNeedVerifyCertificates(yamlRoot)) return;
 
     }  catch (const YAML::ParserException& e) {
         qInfo() << "Parse YAML file: " << QString::fromStdString(e.msg);
@@ -305,6 +318,13 @@ bool ConfigurationViewModel::readSecurePort(const YAML::Node &node) noexcept
 bool ConfigurationViewModel::readIsLogRequests(const YAML::Node &node) noexcept
 {
     m_isLogRequests = node["logrequests"].as<bool>(false);
+
+    return true;
+}
+
+bool ConfigurationViewModel::readNeedVerifyCertificates(const YAML::Node &node) noexcept
+{
+    m_needVerifyCertificates = node["verifyCertificates"].as<bool>(false);
 
     return true;
 }

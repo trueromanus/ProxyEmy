@@ -42,6 +42,7 @@ class ConfigurationViewModel : public QObject
     Q_PROPERTY(QString serverProtocol READ serverProtocol NOTIFY serverProtocolChanged)
     Q_PROPERTY(bool isHasChanges READ isHasChanges NOTIFY isHasChangesChanged)
     Q_PROPERTY(bool isLogRequests READ isLogRequests WRITE setIsLogRequests NOTIFY isLogRequestsChanged)
+    Q_PROPERTY(bool needVerifyCertificates READ needVerifyCertificates WRITE setNeedVerifyCertificates NOTIFY needVerifyCertificatesChanged)
 
 private:
     int m_port { 8080 };
@@ -57,6 +58,7 @@ private:
     int m_lastIdentifier { -1 };
     bool m_isHasChanges { false };
     bool m_isLogRequests { false };
+    bool m_needVerifyCertificates { false };
 
 public:
     explicit ConfigurationViewModel(QObject *parent = nullptr);
@@ -73,6 +75,9 @@ public:
 
     bool isLogRequests() const noexcept { return m_isLogRequests; }
     void setIsLogRequests(const bool isLogRequests) noexcept;
+
+    bool needVerifyCertificates() const noexcept { return m_needVerifyCertificates; }
+    void setNeedVerifyCertificates(const bool needVerifyCertificates) noexcept;
 
     QString serverProtocol() const noexcept { return m_isSecure ? "https" : "http"; }
 
@@ -96,6 +101,7 @@ private:
     bool readPort(const YAML::Node& node) noexcept;
     bool readSecurePort(const YAML::Node& node) noexcept;
     bool readIsLogRequests(const YAML::Node& node) noexcept;
+    bool readNeedVerifyCertificates(const YAML::Node& node) noexcept;
     bool readAddresses(const YAML::Node& node) noexcept;
     bool readMappings(const YAML::Node& node) noexcept;
     QString processExternalRoute(QString&& externalRoute) const noexcept;
@@ -116,6 +122,7 @@ signals:
     void aliasesListModelChanged();
     void isHasChangesChanged();
     void isLogRequestsChanged();
+    void needVerifyCertificatesChanged();
 
 };
 

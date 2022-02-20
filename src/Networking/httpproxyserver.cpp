@@ -205,9 +205,11 @@ QTcpSocket* HttpProxyServer::createSocket(const RouteMapping &mapping)
     if (isSecure) {
         auto socket = new QSslSocket();
 
-        //Disclaimer, very often dev servers placed on localhost have self-signed certificates
-        //what because I added an exception for handling this kind of errors
-        socket->setPeerVerifyMode(QSslSocket::QueryPeer);
+        if (m_configuration->needVerifyCertificates()) {
+            socket->setPeerVerifyMode(QSslSocket::VerifyPeer);
+        } else {
+            socket->setPeerVerifyMode(QSslSocket::QueryPeer);
+        }
 
         socket->connectToHostEncrypted(mapping.getExternalHost(), mapping.getExternalPort());
         if (!socket->waitForEncrypted(2000)) {
