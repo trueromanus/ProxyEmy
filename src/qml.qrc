@@ -22,5 +22,6 @@
         <file>Views/Controls/ContentPopup.qml</file>
         <file>Views/TextFieldValidateStyle.qml</file>
         <file>Views/AddAliasOrMappingCard.qml</file>
+        <file>AboutWindow.qml</file>
     </qresource>
 </RCC>

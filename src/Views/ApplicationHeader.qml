@@ -17,6 +17,7 @@
 */
 
 import QtQuick
+import "Controls"
 
 Item {
     id: root
@@ -81,6 +82,20 @@ Item {
                     }
                 }
             }
+        }
+    }
+
+    IconButton {
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        icon: storagePaths.icons + "info.svg"
+        width: 30
+        height: parent.height
+        iconWidth: 20
+        iconHeight: 20
+        tooltipMessage: "About"
+        onPressed: {
+            aboutWindow.show();
         }
     }
 

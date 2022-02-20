@@ -48,6 +48,10 @@ ApplicationWindow {
         visible: backend.tabs.isRequestLogVisible
     }
 
+    AboutWindow {
+        id: aboutWindow
+    }
+
     NotificationPoolList {
         id: notificationPool
         anchors.right: parent.right
