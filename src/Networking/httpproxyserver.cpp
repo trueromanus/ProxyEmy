@@ -106,7 +106,7 @@ void HttpProxyServer::processSocket(int socket)
     bool webSocketRequest = false;
 
     while (true) {
-        tcpSocket->waitForReadyRead(1000);
+        tcpSocket->waitForReadyRead(500);
         auto bytesCount = tcpSocket->bytesAvailable();
         totalReaded += bytesCount;
         if (bytesCount == 0 || tcpSocket->atEnd()) {
