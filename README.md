@@ -3,7 +3,8 @@
 Simple and fast local reverse proxy server fit as tool as development.  
 All application configuration are stored in a YAML file and can be shared with other teammates (via Git etc).  
 You can also change the configuration in a simple UI.  
-Currently not supported h2/h3.
+Currently not supported h2/h3.  
+![Image woth screenshoot of application](https://github.com/trueromanus/ProxyEmy/blob/main/image.png?raw=true)
 
 ## Use cases
 - Resolve CORS issues in local development, all your websites and services will be on one host.
