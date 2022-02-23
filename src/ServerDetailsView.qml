@@ -356,12 +356,25 @@ Item {
                             maximumLineCount: 1
                             text: textValue
 
+                            property bool hoveredText: false
+
                             MouseArea {
                                 anchors.fill: parent
+                                hoverEnabled: true
                                 onPressed: {
                                     configurationViewModel.mappingListModel.enableEditing(row);
                                 }
+                                onEntered: {
+                                    parent.hoveredText = true;
+                                }
+                                onExited: {
+                                    parent.hoveredText = false;
+                                }
                             }
+
+                            ToolTip.delay: 1000
+                            ToolTip.visible: hoveredText
+                            ToolTip.text: textValue
                         }
                         TextField {
                             visible: column !== 2 && isEditing
