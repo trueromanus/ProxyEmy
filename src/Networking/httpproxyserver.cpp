@@ -103,8 +103,10 @@ void HttpProxyServer::processSocket(int socket)
 
     int64_t totalReaded = 0;
 
+    bool webSocketRequest = false;
+
     while (true) {
-        tcpSocket->waitForReadyRead(1000);
+        tcpSocket->waitForReadyRead(500);
         auto bytesCount = tcpSocket->bytesAvailable();
         totalReaded += bytesCount;
         if (bytesCount == 0 || tcpSocket->atEnd()) {
@@ -121,6 +123,9 @@ void HttpProxyServer::processSocket(int socket)
                 closeSocket(tcpSocket);
                 break;
             }
+
+            webSocketRequest = isWebSocket(bytes);
+
             auto route = routeData[1];
             auto currentRoute = m_configuration->getMappingByRoute(route);
             if (currentRoute == nullptr) {
@@ -157,29 +162,51 @@ void HttpProxyServer::processSocket(int socket)
     bool isAcceptBytes = false;
     bool isAcceptBytesCheck = false;
 
-    while (true) {
-        innerTcpSocket->waitForReadyRead(1000);        
-        auto bytesCount = innerTcpSocket->bytesAvailable();
-        if (bytesCount == 0 || innerTcpSocket->atEnd()) {
-            if (!isAcceptBytes) break;
+    if (webSocketRequest) {
+        while (true) {
+            // if any from connections already closed we breaking connection
+            if (innerTcpSocket->state() == QAbstractSocket::UnconnectedState || innerTcpSocket->state() == QAbstractSocket::ClosingState) break;
+            if (tcpSocket->state() == QAbstractSocket::UnconnectedState || tcpSocket->state() == QAbstractSocket::ClosingState) break;
 
-            auto bytes = readAllAvailableBytesFromSocket(tcpSocket);
-            if (bytes.length() == 0) break;
+            //handle inner socket
+            auto innerBytes = readAllAvailableBytesFromSocket(innerTcpSocket, 100);
+            if (innerBytes.count() > 0) {
+                tcpSocket->write(innerBytes);
+                tcpSocket->waitForBytesWritten(200);
+            }
 
-            innerTcpSocket->write(bytes);
-            innerTcpSocket->waitForBytesWritten(2000);
-            continue;
+            //handle outer socket
+            auto outerBytes = readAllAvailableBytesFromSocket(tcpSocket, 100);
+            if (outerBytes.count() > 0) {
+                innerTcpSocket->write(outerBytes);
+                innerTcpSocket->waitForBytesWritten(200);
+            }
         }
+    } else {
+        while (true) {
+            innerTcpSocket->waitForReadyRead(1000);
+            auto bytesCount = innerTcpSocket->bytesAvailable();
+            if (bytesCount == 0 || innerTcpSocket->atEnd()) {
+                if (!isAcceptBytes) break;
 
-        auto bytes = innerTcpSocket->read(bytesCount);
+                auto bytes = readAllAvailableBytesFromSocket(tcpSocket);
+                if (bytes.length() == 0) break;
 
-        if (!isAcceptBytesCheck) {
-            isAcceptBytesCheck = true;
-            isAcceptBytes = isAcceptRanges(bytes);
+                innerTcpSocket->write(bytes);
+                innerTcpSocket->waitForBytesWritten(2000);
+                continue;
+            }
+
+            auto bytes = innerTcpSocket->read(bytesCount);
+
+            if (!isAcceptBytesCheck) {
+                isAcceptBytesCheck = true;
+                isAcceptBytes = isAcceptRanges(bytes);
+            }
+
+            tcpSocket->write(bytes);
+            tcpSocket->waitForBytesWritten();
         }
-
-        tcpSocket->write(bytes);
-        tcpSocket->waitForBytesWritten();
     }
 
     tcpSocket->waitForBytesWritten(1000);
@@ -282,17 +309,25 @@ QList<QByteArray> HttpProxyServer::getRoute(QByteArray bytes)
     return routeHeader.split(' ');
 }
 
+bool HttpProxyServer::isWebSocket(QByteArray bytes)
+{
+    if (bytes.indexOf("Upgrade: websocket") > -1) return true;
+    if (bytes.indexOf("Upgrade: WebSocket") > -1) return true;
+
+    return false;
+}
+
 bool HttpProxyServer::isAcceptRanges(QByteArray bytes)
 {
     return bytes.indexOf("Accept-Ranges: bytes") > -1;
 }
 
-QByteArray HttpProxyServer::readAllAvailableBytesFromSocket(QTcpSocket * socket)
+QByteArray HttpProxyServer::readAllAvailableBytesFromSocket(QTcpSocket * socket, int delay)
 {
     QByteArray result;
 
     while (true) {
-        socket->waitForReadyRead(1000);
+        socket->waitForReadyRead(delay);
         auto bytesCount = socket->bytesAvailable();
         if (bytesCount == 0 || socket->atEnd()) return result;
 

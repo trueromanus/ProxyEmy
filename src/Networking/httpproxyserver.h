@@ -79,8 +79,9 @@ private:
     bool setupSslSocket(QSslSocket& socket, const int socketDescriptor);
     QTcpSocket* createSocketFromDescription(const int socket);
     QList<QByteArray> getRoute(QByteArray bytes);
+    bool isWebSocket(QByteArray bytes);
     bool isAcceptRanges(QByteArray bytes);
-    QByteArray readAllAvailableBytesFromSocket(QTcpSocket* socket);
+    QByteArray readAllAvailableBytesFromSocket(QTcpSocket* socket, int delay = 1000);
     QByteArray replaceHost(QByteArray bytes, RouteMapping * mapping, QList<QByteArray>& routeData);
 
 signals:
