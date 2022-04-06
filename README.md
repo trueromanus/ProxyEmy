@@ -1,15 +1,14 @@
 # ProxyEmy
 
-Simple and fast local reverse proxy server fit as tool as development.  
-All application configuration are stored in a YAML file and can be shared with other teammates (via Git etc).  
-You can also change the configuration in a simple UI.  
-Currently not supported h2/h3.  
+Simple and fast local reverse proxy server fit as tool for development.  
+The application is fully native, you don't need to install additional stuff. All application configuration are stored in a YAML file and can be shared with other teammates (via Git etc). You can also change the configuration in a simple UI. Currently not supported h2/h3.  
 ![Image woth screenshoot of application](https://github.com/trueromanus/ProxyEmy/blob/main/image.png?raw=true)
 
 ## Use cases
 - Resolve CORS issues in local development, all your websites and services will be on one host.
 - Test web applications that require a secure (HTTPS) connection on a local machine (PWA, Android emulator etc).
 - Application can be logging external requests and show them on a special page in UI.
+- Demystification HTTPS traffic for sniffers.
 - Unification of all your (micro)services on one host inside human-readable aliases or prefixes   
   as example  
   http://localhost/ - for frontend (actually http://localhost:9340/),  
