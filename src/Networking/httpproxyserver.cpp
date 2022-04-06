@@ -127,6 +127,7 @@ void HttpProxyServer::processSocket(int socket)
             webSocketRequest = isWebSocket(bytes);
 
             auto route = routeData[1];
+
             auto currentRoute = m_configuration->getMappingByRoute(route);
             if (currentRoute == nullptr) {
                 tcpSocket->write(m_EmptyResponse.toUtf8());
@@ -183,9 +184,17 @@ void HttpProxyServer::processSocket(int socket)
             }
         }
     } else {
+        qint64 totalLoopBytes = 0;
+        int tryTimes = 0;
+        int readDelay = 1000;
         while (true) {
-            innerTcpSocket->waitForReadyRead(1000);
+            innerTcpSocket->waitForReadyRead(readDelay);
             auto bytesCount = innerTcpSocket->bytesAvailable();
+            if (totalLoopBytes == 0 && bytesCount == 0 && tryTimes < 5) {
+                tryTimes += 1;
+                readDelay = 1000 * tryTimes;
+                continue;
+            }
             if (bytesCount == 0 || innerTcpSocket->atEnd()) {
                 if (!isAcceptBytes) break;
 
@@ -196,6 +205,8 @@ void HttpProxyServer::processSocket(int socket)
                 innerTcpSocket->waitForBytesWritten(2000);
                 continue;
             }
+
+            totalLoopBytes += bytesCount;
 
             auto bytes = innerTcpSocket->read(bytesCount);
 
