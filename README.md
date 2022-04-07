@@ -1,7 +1,7 @@
 # ProxyEmy
 
 Simple and fast local reverse proxy server fit as tool for development.  
-The application is fully native, you don't need to install additional stuff. All application configuration are stored in a YAML file and can be shared with other teammates (via Git etc). You can also change the configuration in a simple UI. Currently not supported h2/h3.  
+The application is fully native, you don't need to install additional stuff. All application configuration are stored in a YAML file and can be shared with other teammates (via Git etc). You can also change the configuration in a simple UI.
 ![Image woth screenshoot of application](https://github.com/trueromanus/ProxyEmy/blob/main/image.png?raw=true)
 
 ## Use cases
@@ -42,6 +42,10 @@ mappings:
 - Windows 10+
 - Linux (partually support)
 - macOS 10.14+ (partually support)
+
+## Roadmap
+- [ ] Support h2
+- [ ] Support h3
 
 ## How to build
 ### Requirements
