@@ -1,6 +1,6 @@
 # ProxyEmy
 
-Simple and fast local reverse proxy server fit as tool for development. Fully native application.
+Simple and fast local reverse proxy server fit as tool for development. Fully native application.  
 The application is fully native, you don't need to install additional stuff. All application configuration are stored in a YAML file and can be shared with other teammates (via Git etc). You can also change the configuration in a simple UI.
 ![Image woth screenshoot of application](https://github.com/trueromanus/ProxyEmy/blob/main/image.png?raw=true)
 
